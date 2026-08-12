@@ -1,0 +1,55 @@
+.login-box {
+    max-width: 400px;
+    margin: 100px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.login-box h1 {
+    margin-bottom: 10px;
+}
+
+.panel {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pedido-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.pedido-info ul {
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.pedido-botones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 130px;
+}
+
+.pedido-botones button {
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}

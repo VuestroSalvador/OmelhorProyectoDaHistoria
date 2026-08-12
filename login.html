@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Acceso Empleados</title>
+    <link rel="stylesheet" href="body.css">
+    <link rel="stylesheet" href="empleados.css">
+</head>
+<body>
+
+<!-- MENU -->
+<div class="menu-container">
+    <img src="img.tecN°24.png" class="menu-icon" onclick="toggleMenu()">
+    <div id="menu" class="menu">
+        <a href="index.html">Inicio</a>
+        <a href="buffet.html">Buffet</a>
+        <a href="merch.html">Merchandising</a>
+    </div>
+</div>
+
+<div class="login-box">
+    <h1>🔒 Acceso Empleados</h1>
+    <p>Ingresá tus datos para continuar</p>
+
+    <div class="formulario">
+        <input type="text" id="usuario" placeholder="Usuario" value="user01">
+        <input type="password" id="contrasena" placeholder="Contraseña">
+        <p id="error" style="color:red; display:none;">❌ Usuario o contraseña incorrectos</p>
+        <button onclick="login()">Ingresar</button>
+    </div>
+
+    <br>
+    <a href="index.html" class="btn-volver">← Volver</a>
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("menu").classList.toggle("show");
+}
+
+function login() {
+    let usuario = document.getElementById("usuario").value.trim();
+    let contrasena = document.getElementById("contrasena").value.trim();
+
+    if (usuario === "user01" && contrasena === "45370696") {
+        localStorage.setItem("empleadoLogueado", usuario);
+        window.location.href = "empleados.html";
+    } else {
+        document.getElementById("error").style.display = "block";
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compra</title>
+    <link rel="stylesheet" href="body.css">
+    <link rel="stylesheet" href="compra.css">
+</head>
+<body>
+
+<div class="compra-container">
+    <h1>Finalizar compra</h1>
+
+    <div class="resumen-box">
+        <h2>🛒 Tu pedido</h2>
+        <ul id="listaResumen"></ul>
+        <p id="totalFinal"></p>
+    </div>
+
+    <h2>Tus datos</h2>
+    <div class="formulario">
+        <input type="text" id="nombre" placeholder="Nombre y apellido" required>
+        <input type="text" id="dni" placeholder="DNI" pattern="[0-9]{7,8}" maxlength="8" required>        <input type="text" id="curso" placeholder="Curso (ej: 3°A)" required>
+        <input type="tel" id="telefono" placeholder="Teléfono" required>
+
+        <label class="label-pago">Medio de pago</label>
+        <div class="opciones-pago">
+            <label class="opcion-pago">
+                <input type="radio" name="pago" value="Efectivo" checked>
+                💵 Efectivo
+            </label>
+            <label class="opcion-pago">
+                <input type="radio" name="pago" value="Transferencia">
+                🏦 Transferencia
+            </label>
+        </div>
+
+        <button onclick="finalizarCompra()">Confirmar compra</button>
+    </div>
+</div>
+
+<a href="javascript:history.back()" class="btn-volver">← Volver</a>
+
+<script>
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let total = 0;
+
+let lista = document.getElementById("listaResumen");
+carrito.forEach((item, index) => {
+    let subtotal = item.precio * item.cantidad;
+    total += subtotal;
+    lista.innerHTML += `
+        <div class="fila-pedido">
+            <span>${item.nombre} x${item.cantidad} — $${subtotal.toLocaleString('es-AR')}</span>
+            <button class="btn-borrar" onclick="eliminarDelCarrito(${index})">🗑️</button>
+        </div>
+    `;
+});
+document.getElementById("totalFinal").innerHTML = "<strong>Total: $" + total.toLocaleString('es-AR') + "</strong>";
+function eliminarDelCarrito(index) {
+    carrito.splice(index, 1);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    location.reload(); // Recarga la página para refrescar la lista y el total
+}
+function finalizarCompra() {
+    let nombre = document.getElementById("nombre").value.trim();
+    let dni = document.getElementById("dni").value.trim();
+    let curso = document.getElementById("curso").value.trim();
+    let telefono = document.getElementById("telefono").value.trim();
+    let pago = document.querySelector('input[name="pago"]:checked').value;
+
+    if (!nombre) { alert("⚠️ Ingresá tu nombre y apellido"); return; }
+    if (!dni || !/^[0-9]{7,8}$/.test(dni)) { alert("⚠️ Ingresá un DNI válido (7 u 8 números)"); return; }
+    if (!curso) { alert("⚠️ Ingresá tu curso"); return; }
+    if (!telefono || !/^[0-9+\s]{8,15}$/.test(telefono)) { alert("⚠️ Ingresá un teléfono válido"); return; }
+
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    pedidos.push({
+        nombre, dni, curso, telefono, pago,
+        items: carrito,
+        total: total,
+        estado: "Pendiente"
+    });
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+
+    alert("✅ Compra confirmada!\nNombre: " + nombre + "\nTotal: $" + total.toLocaleString('es-AR') + "\nPago: " + pago);
+    localStorage.removeItem("carrito");
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
