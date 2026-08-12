@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel Empleados</title>
+    <link rel="stylesheet" href="body.css">
+    <link rel="stylesheet" href="empleados.css">
+</head>
+<body>
+
+<!-- MENU -->
+<div class="menu-container">
+    <img src="img.tecN°24.png" class="menu-icon" onclick="toggleMenu()">
+    <div id="menu" class="menu">
+        <a href="index.html">Inicio</a>
+        <a href="buffet.html">Buffet</a>
+        <a href="merch.html">Merchandising</a>
+    </div>
+</div>
+
+<header>
+    <h1>Panel de Empleados</h1>
+    <p id="bienvenida"></p>
+</header>
+
+<div class="panel">
+
+    <div class="panel-header">
+        <h2>📋 Pedidos recibidos</h2>
+        <button onclick="limpiarPedidos()" style="background:red;">🗑️ Limpiar todos</button>
+    </div>
+
+    <div id="listaPedidos">
+        <p id="sinPedidos">No hay pedidos por el momento.</p>
+    </div>
+
+</div>
+
+<a href="index.html" class="btn-volver">← Volver</a>
+
+<script>
+function toggleMenu() {
+    document.getElementById("menu").classList.toggle("show");
+}
+
+// Verificar que esté logueado
+window.onload = function() {
+    let usuario = localStorage.getItem("empleadoLogueado");
+    if (!usuario) {
+        window.location.href = "login.html";
+        return;
+    }
+    document.getElementById("bienvenida").innerText = "Bienvenido, " + usuario;
+    mostrarPedidos();
+}
+
+function mostrarPedidos() {
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    let contenedor = document.getElementById("listaPedidos");
+    let sinPedidos = document.getElementById("sinPedidos");
+
+    if (pedidos.length === 0) {
+        sinPedidos.style.display = "block";
+        return;
+    }
+
+    sinPedidos.style.display = "none";
+    contenedor.innerHTML = "";
+
+    pedidos.forEach((pedido, i) => {
+        let estadoColor = pedido.estado === "Entregado" ? "green" : pedido.estado === "Listo" ? "orange" : "#1e3a8a";
+
+        contenedor.innerHTML += `
+        <div class="pedido-card">
+            <div class="pedido-info">
+                <p><strong>👤 ${pedido.nombre}</strong> — DNI: ${pedido.dni} — Curso: ${pedido.curso}</p>
+                <p>📧 ${pedido.email}</p>
+                <ul>
+                    ${pedido.items.map(item => `<li>${item.nombre} x${item.cantidad} — $${(item.precio * item.cantidad).toLocaleString('es-AR')}</li>`).join('')}
+                </ul>
+                <p><strong>Total: $${pedido.total.toLocaleString('es-AR')}</strong></p>
+                <p>Estado: <strong style="color:${estadoColor}">${pedido.estado}</strong></p>
+            </div>
+            <div class="pedido-botones">
+                <button onclick="cambiarEstado(${i}, 'Listo')" style="background:orange;">✅ Listo</button>
+                <button onclick="cambiarEstado(${i}, 'Entregado')" style="background:green;">📦 Entregado</button>
+            </div>
+        </div>`;
+    });
+}
+
+function cambiarEstado(index, nuevoEstado) {
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    pedidos[index].estado = nuevoEstado;
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+    mostrarPedidos();
+}
+
+function limpiarPedidos() {
+    if (confirm("¿Seguro que querés borrar todos los pedidos?")) {
+        localStorage.removeItem("pedidos");
+        mostrarPedidos();
+    }
+}
+</script>
+
+</body>
+</html>

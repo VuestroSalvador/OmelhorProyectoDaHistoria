@@ -1,0 +1,106 @@
+.compra-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.compra-container h1 {
+    font-size: 26px;
+    margin-bottom: 20px;
+}
+
+.compra-container h2 {
+    font-size: 18px;
+    margin: 20px 0 10px;
+}
+
+.resumen-box {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.resumen-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.resumen-box ul li {
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #444;
+}
+
+#totalFinal {
+    margin-top: 12px;
+    font-size: 18px;
+    color: #111;
+}
+
+.label-pago {
+    font-weight: bold;
+    font-size: 15px;
+    text-align: left;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.opciones-pago {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.opcion-pago {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f7f7f7;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.opcion-pago:has(input:checked) {
+    border-color: #e63946;
+    background: #fff0f1;
+}
+
+.opcion-pago input {
+    accent-color: #e63946;
+}
+
+@media (max-width: 480px) {
+    .compra-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .opciones-pago {
+        flex-direction: column;
+    }
+}
+.fila-pedido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.btn-borrar {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
