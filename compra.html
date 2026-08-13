@@ -61,30 +61,67 @@ function eliminarDelCarrito(index) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
     location.reload(); // Recarga la página para refrescar la lista y el total
 }
-function finalizarCompra() {
+async function finalizarCompra() {
+    // 1. Obtener valores de los campos del formulario
     let nombre = document.getElementById("nombre").value.trim();
     let dni = document.getElementById("dni").value.trim();
     let curso = document.getElementById("curso").value.trim();
     let telefono = document.getElementById("telefono").value.trim();
-    let pago = document.querySelector('input[name="pago"]:checked').value;
+    let pagoInput = document.querySelector('input[name="pago"]:checked');
 
-    if (!nombre) { alert("⚠️ Ingresá tu nombre y apellido"); return; }
-    if (!dni || !/^[0-9]{7,8}$/.test(dni)) { alert("⚠️ Ingresá un DNI válido (7 u 8 números)"); return; }
-    if (!curso) { alert("⚠️ Ingresá tu curso"); return; }
-    if (!telefono || !/^[0-9+\s]{8,15}$/.test(telefono)) { alert("⚠️ Ingresá un teléfono válido"); return; }
+    // Validación de campos vacíos
+    if (!nombre || !dni || !curso || !telefono || !pagoInput) {
+        alert("Por favor, completa todos los datos del formulario antes de finalizar.");
+        return;
+    }
 
-    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    pedidos.push({
-        nombre, dni, curso, telefono, pago,
-        items: carrito,
-        total: total,
-        estado: "Pendiente"
-    });
-    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+    if (carrito.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+    }
 
-    alert("✅ Compra confirmada!\nNombre: " + nombre + "\nTotal: $" + total.toLocaleString('es-AR') + "\nPago: " + pago);
-    localStorage.removeItem("carrito");
-    window.location.href = "index.html";
+    // Calcular total acumulado
+    let totalAcumulado = carrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
+
+    // Estructura de datos a enviar
+    const pedidoData = {
+        cliente: {
+            nombre: nombre,
+            dni: dni,
+            curso: curso,
+            telefono: telefono,
+            pago: pagoInput.value
+        },
+        productos: carrito,
+        total: totalAcumulado
+    };
+
+    try {
+        // Enviar la orden al servidor backend
+        const respuesta = await fetch('http://localhost:3000/api/pedidos', { // Reemplazar por URL de Render en producción
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(pedidoData)
+        });
+
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok) {
+            alert(`¡Pedido #${resultado.idPedido} guardado con éxito! Gracias por tu compra.`);
+            
+            // Vaciar el carrito en pantalla y memoria
+            carrito = [];
+            localStorage.removeItem("carrito");
+            location.reload();
+        } else {
+            alert("Hubo un problema al procesar el pedido: " + resultado.error);
+        }
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        alert("No se pudo conectar con el servidor para guardar la compra.");
+    }
 }
 </script>
 
