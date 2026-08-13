@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleMerch.css">
+    <title>Administrar Productos — ET24</title>
+</head>
+<body>
+    <header class="banner">
+        <img src="imagenes/et24.jpg" alt="Edificio de la Escuela Técnica N°24" class="banner-img">
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+            <img src="imagenes/img.tecN°24.png" alt="Escudo ET24" class="banner-logo">
+            <span class="eyebrow">Escuela Técnica N.º 24 — Prácticas Profesionalizantes</span>
+        </div>
+    </header>
+
+    <div class="diamond-strip"></div>
+
+    <section class="admin">
+        <h1>Administrar Productos</h1>
+        <p>En esta sección puedes agregar, eliminar o modificar productos.</p>
+
+        <form id="form-producto">
+            <img src="imagenes/logopp.jpg" alt="Sello Prácticas Profesionalizantes ET24" class="stamp">
+            <label>Nombre del Producto
+                <input type="text" id="nombre" placeholder="Nombre del Producto" required>
+            </label>
+            <label>Categoría
+             <select id="categoria" required>
+                 <option value="" disabled selected>Seleccionar categoría</option>
+           </select>
+            </label>
+            <label>Precio
+                <input type="number" id="precio" placeholder="Precio" required>
+            </label>
+            <label>Descripción
+                <input type="text" id="descripcion" placeholder="Descripción" required>
+            </label>
+            <label>Stock
+                <input type="number" id="stock" placeholder="Stock" required>
+            </label>
+            <button type="submit" class="btn" id="btn-submit">Confirmar Producto</button>
+        </form>
+    </section>
+
+    <div class="diamond-strip"></div>
+
+    <section class="catalogo">
+        <h2>Catálogo de Productos</h2>
+        <div class="catalogo-grid" id="catalogo-grid"></div>
+    </section>
+
+    <script src="adminMerch.js"></script>
+</body>
+</html>

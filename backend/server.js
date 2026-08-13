@@ -22,6 +22,7 @@ app.get('/api/productos', async (req, res) => {
                 p."Nombre" AS nombre,
                 p."Precio" AS precio,
                 p."Descripcion" AS descripcion,
+                p."Stock" AS stock,
                 p."Imagen" AS imagen,
                 c."categoria" AS categoria
             FROM "Producto" p
@@ -105,6 +106,82 @@ app.post('/api/pedidos', async (req, res) => {
     }
 });
 
+
+// crear un producto nuevo
+app.post('/api/productos', async (req, res) => {
+    try {
+        const { nombre, precio, descripcion, stock, id_categoria, imagen } = req.body;
+        const imagenFinal = imagen ?? null;
+        
+        const resultado = await sql`
+            INSERT INTO "Producto" ("Nombre", "Precio", "Descripcion", "Stock", "ID_categoria", "Imagen")
+            VALUES (${nombre}, ${precio}, ${descripcion}, ${stock}, ${id_categoria}, ${imagen})
+            RETURNING 
+                "ID_producto" AS id,
+                "Nombre" AS nombre,
+                "Precio" AS precio,
+                "Descripcion" AS descripcion,
+                "Stock" AS stock,
+                "Imagen" AS imagen
+        `;
+
+        res.status(201).json(resultado[0]);
+    } catch (error) {
+        console.error('Error al crear producto:', error);
+        res.status(500).json({ error: 'Error al crear producto' });
+    }
+});
+
+// editar un producto existente
+app.put('/api/productos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, precio, descripcion, stock } = req.body;
+
+        const resultado = await sql`
+            UPDATE "Producto"
+            SET 
+                "Nombre" = ${nombre},
+                "Precio" = ${precio},
+                "Descripcion" = ${descripcion},
+                "Stock" = ${stock}
+            WHERE "ID_producto" = ${id}
+            RETURNING 
+                "ID_producto" AS id,
+                "Nombre" AS nombre,
+                "Precio" AS precio,
+                "Descripcion" AS descripcion,
+                "Stock" AS stock,
+                "Imagen" AS imagen
+        `;
+
+        if (resultado.length === 0) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        res.json(resultado[0]);
+    } catch (error) {
+        console.error('Error al editar producto:', error);
+        res.status(500).json({ error: 'Error al editar producto' });
+    }
+});
+
+// obtener categorías desde Neon (para el selector del formulario)
+app.get('/api/categorias', async (req, res) => {
+    try {
+        const categorias = await sql`
+            SELECT 
+                "ID_categoria" AS id,
+                "categoria" AS nombre
+            FROM "Categoria"
+            ORDER BY "categoria"
+        `;
+        res.json(categorias);
+    } catch (error) {
+        console.error('Error al consultar categorías:', error);
+        res.status(500).json({ error: 'Error al obtener categorías' });
+    }
+});
 // Arrancar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
