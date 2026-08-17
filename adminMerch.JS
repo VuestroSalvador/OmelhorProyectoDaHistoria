@@ -68,7 +68,6 @@ function renderCatalogo() {
                 </div>
                 <div class="producto-acciones">
                     <button class="btn-editar" data-id="${producto.id}">Editar</button>
-                    <button class="btn-eliminar" data-id="${producto.id}" disabled title="Eliminar no disponible por el momento">Eliminar</button>
                 </div>
             </div>
         `;
@@ -79,7 +78,7 @@ function renderCatalogo() {
         btn.addEventListener("click", () => cargarEnFormulario(btn.dataset.id));
     });
 
-    // El botón "Eliminar" queda deshabilitado a propósito: no está implementado.
+    
 }
 
 // ---------- Cargar datos en el formulario para editar ----------
