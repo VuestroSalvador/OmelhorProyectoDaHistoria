@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Merchandising Escolar</title>
+    <link rel="stylesheet" href="body.css">
+</head>
+<body>
+
+<!-- MENU -->
+<div class="menu-container">
+    <img src="imagenes/img.tecN°24.png" class="menu-icon" onclick="toggleMenu()">
+    <div id="menu" class="menu">
+        <a href="index.html">Inicio</a>
+        <a href="buffet.html">Buffet</a>
+        <a href="merch.html">Merchandising</a>
+    </div>
+</div>
+
+<header>
+    <h1>LA 24 SHOP</h1>
+    <p>Productos oficiales de la ET N°24</p>
+</header>
+
+<a href="index.html" class="btn-volver">← Volver</a>
+
+<input type="text" id="buscador" placeholder="Buscar producto..." onkeyup="buscar()">
+<div style="text-align:right; padding: 10px 30px;">
+    <button onclick="window.location.href='compra.html'" style="background:#111;">🛒 Ver carrito </button>
+</div>
+
+<!-- Carrousel, el css es body.css-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrusel Nativo</title>
+<div class="carousel-container">
+        <!-- Pistas con las imágenes -->
+        <div class="carousel-track">
+            <div class="carousel-slide active">
+                <img src="imagenes/et24.jpg" alt="Banner 1">
+            </div>
+            <div class="carousel-slide">
+                <img src="imagenes/et24.jpg" alt="Banner 2">
+            </div>
+            <div class="carousel-slide">
+                <img src="imagenes/et24.jpg" alt="Banner 3">
+            </div>
+        </div>
+
+        <!-- Botones de navegación (Flechas) -->
+        <button class="carousel-btn prev-btn" id="prevBtn">&#10094;</button>
+        <button class="carousel-btn next-btn" id="nextBtn">&#10095;</button>
+
+        <!-- Puntos indicadores abajo -->
+        <div class="carousel-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+
+
+<section>
+
+    <h2 class="categoria-titulo">👕 Indumentaria</h2>
+    <div class="productos" id="contenedor-indumentaria"></div>
+ 
+    <h2 class="categoria-titulo">☕ Tazas</h2>
+    <div class="productos" id="contenedor-tazas"></div>
+
+    <h2 class="categoria-titulo">📌 Componentes</h2>
+    <div class="productos" id="contenedor-componentes"></div>
+
+
+
+</section>
+
+<script src="merch.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleHome.css">
+    <title>24 SHOP — Escuela Técnica N.º 24</title>
+</head>
+<body>
+
+    <!-- ---------- Banner con foto del edificio ---------- -->
+    <header class="banner">
+        <img src="imagenes/et24.jpg" alt="Edificio de la Escuela Técnica N°24" class="banner-img">
+        <div class="banner-overlay"></div>
+        <div class="banner-blob banner-blob-1"></div>
+        <div class="banner-blob banner-blob-2"></div>
+        <div class="banner-content">
+            <img src="imagenes/img.tecN°24.png" alt="Escudo ET24" class="banner-logo">
+            <span class="eyebrow">Escuela Técnica N.º 24 — Prácticas Profesionalizantes</span>
+            <h1 class="banner-title">24 SHOP</h1>
+            <span class="banner-tagline">Merchandising oficial, hecho por alumnos ✦ para la comunidad</span>
+        </div>
+    </header>
+
+    <div class="diamond-strip"></div>
+
+    <!-- ---------- Navbar sticky ---------- -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#sobre-nosotros" class="navbar-brand">
+                <span class="brand-bolt">24</span>
+                <span>SHOP</span>
+            </a>
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#sobre-nosotros" class="nav-link">Sobre Nosotros</a></li>
+                <li><a href="merch.html" class="nav-link">Explorar Tienda</a></li>
+                <li><a href="empleados.html" class="nav-link">Equipo ET24</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ---------- Tira de estadísticas ---------- -->
+    <section class="stats-strip reveal">
+        <div class="stat">
+            <span class="stat-num" data-count="19">0</span>
+            <span class="stat-label">Productos en catálogo</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+            <span class="stat-num" data-count="3">0</span>
+            <span class="stat-label">Categorías disponibles</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+            <span class="stat-num" data-count="100">0</span>
+            <span class="stat-label">% hecho por alumnos</span>
+        </div>
+    </section>
+
+    <!-- ---------- Sección Sobre Nosotros ---------- -->
+    <section class="sobre-nosotros" id="sobre-nosotros">
+        <div class="sobre-texto reveal">
+            <span class="section-eyebrow">✦ Sobre Nosotros</span>
+            <h2>La tienda hecha por y para la comunidad de la ET24</h2>
+
+            <!-- ✏️ EDITAR: reemplazá este texto por la presentación real de la tienda -->
+            <p>
+                24 SHOP nace como proyecto de Prácticas Profesionalizantes de la Escuela Técnica N.º 24.
+                Acá vas a encontrar remeras, tazas, llaveros y demás merchandising institucional,
+                pensado y armado por estudiantes de la escuela para financiar actividades y proyectos
+                de la comunidad educativa.
+            </p>
+            <p>
+                Cada compra ayuda a sostener nuevas iniciativas dentro de la escuela. Todo el proceso
+                (desde el diseño hasta la venta) fue desarrollado íntegramente por alumnos como parte
+                de sus prácticas.
+            </p>
+            <!-- fin del texto editable -->
+
+            <div class="sobre-badges">
+                <span class="pill">🚚 Retiro en la escuela</span>
+                <span class="pill">🎓 Hecho por alumnos</span>
+                <span class="pill">💙 Apoya proyectos ET24</span>
+            </div>
+
+            <a href="merch.html" class="btn">Ir a la Tienda</a>
+        </div>
+
+        <div class="sobre-galeria reveal">
+            <!-- ✏️ EDITAR: reemplazá estas imágenes por fotos reales de la tienda / productos -->
+            <img src="imagenes/et24.jpg" alt="Fachada de la Escuela Técnica N°24" class="galeria-img galeria-grande">
+            <img src="imagenes/img.tecN°24.png" alt="Escudo institucional ET24" class="galeria-img galeria-chica-1">
+            <img src="imagenes/logopp.jpg" alt="Sello Prácticas Profesionalizantes" class="galeria-img galeria-chica-2">
+            <span class="galeria-sticker">✦ Nuevo</span>
+        </div>
+    </section>
+
+    <!-- ---------- Proyectos financiados con las ganancias de la tienda ---------- -->
+    <section class="proyectos">
+        <div class="proyectos-head reveal">
+            <span class="section-eyebrow">✦ Impacto Real</span>
+            <h2>Proyectos que hicimos posibles</h2>
+            <p>Cada compra en 24 SHOP se convierte en mejoras concretas para la escuela. Esto es lo que logramos hasta ahora.</p>
+        </div>
+
+        <!-- ✏️ EDITAR: reemplazá foto, título, descripción y monto de cada proyecto por los reales -->
+        <article class="proyecto-fila reveal">
+            <div class="proyecto-media">
+                <img src="imagenes/et24.jpg" alt="Laboratorio de Robótica renovado">
+            </div>
+            <div class="proyecto-contenido">
+                <span class="proyecto-monto">$85.000 recaudados</span>
+                <h3>Renovación del Laboratorio de Robótica</h3>
+                <p>Compramos kits de sensores y placas nuevas para que 3º y 4º año puedan armar sus proyectos finales.</p>
+            </div>
+        </article>
+
+        <article class="proyecto-fila proyecto-fila-invertida reveal">
+            <div class="proyecto-media">
+                <img src="imagenes/et24.jpg" alt="Viaje a la Feria de Tecnología">
+            </div>
+            <div class="proyecto-contenido">
+                <span class="proyecto-monto">$120.000 recaudados</span>
+                <h3>Viaje a la Feria de Tecnología</h3>
+                <p>Financiamos el traslado de un grupo de alumnos a presentar su proyecto en la feria provincial.</p>
+            </div>
+        </article>
+
+        <article class="proyecto-fila reveal">
+            <div class="proyecto-media">
+                <img src="imagenes/et24.jpg" alt="Equipo de sonido para actos escolares">
+            </div>
+            <div class="proyecto-contenido">
+                <span class="proyecto-monto">$45.000 recaudados</span>
+                <h3>Equipo de Sonido para Actos Escolares</h3>
+                <p>Un sistema de audio nuevo para que los actos y eventos de la escuela se escuchen como corresponde.</p>
+            </div>
+        </article>
+
+        <article class="proyecto-fila proyecto-fila-invertida reveal">
+            <div class="proyecto-media">
+                <img src="imagenes/et24.jpg" alt="Huerta sustentable del patio central">
+            </div>
+            <div class="proyecto-contenido">
+                <span class="proyecto-monto">$30.000 recaudados</span>
+                <h3>Huerta Sustentable del Patio Central</h3>
+                <p>Herramientas y semillas para el proyecto de huerta que llevan adelante los talleres de la tarde.</p>
+            </div>
+        </article>
+    </section>
+
+    <!-- ---------- Vidriera de categorías ---------- -->
+    <section class="vidriera">
+        <div class="vidriera-head reveal">
+            <span class="section-eyebrow">✦ La Vidriera</span>
+            <h2>Elegí tu categoría favorita</h2>
+        </div>
+
+        <div class="vidriera-grid reveal">
+            <a href="merch.html" class="categoria-card">
+                <span class="categoria-icono">👕</span>
+                <h3>Indumentaria</h3>
+                <p>Remeras, buzos y camperas</p>
+            </a>
+            <a href="merch.html" class="categoria-card">
+                <span class="categoria-icono">☕</span>
+                <h3>Tazas</h3>
+                <p>Cerámica con escudo institucional</p>
+            </a>
+            <a href="merch.html" class="categoria-card">
+                <span class="categoria-icono">🔑</span>
+                <h3>Llaveros</h3>
+                <p>Metálicos, edición ET24</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- ---------- CTA final ---------- -->
+    <section class="cta-final reveal">
+        <h2>¿Ya elegiste tu producto favorito?</h2>
+        <p>Entrá a la tienda y hacé tu pedido en minutos.</p>
+        <a href="merch.html" class="btn btn-cta">Ver Catálogo ↗</a>
+    </section>
+
+    <div class="diamond-strip"></div>
+
+    <footer class="footer">
+        <p>24 SHOP — Escuela Técnica N.º 24 · Proyecto de Prácticas Profesionalizantes</p>
+    </footer>
+
+    <script src="homeET24.js"></script>
+</body>
+</html>
