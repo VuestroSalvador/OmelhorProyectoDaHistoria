@@ -6,43 +6,55 @@
 </head>
 <body>
 
-<!-- MENU -->
-<div class="menu-container">
-    <img src="imagenes/img.tecN°24.png" class="menu-icon" onclick="toggleMenu()">
-    <div id="menu" class="menu">
-        <a href="index.html">Inicio</a>
-        <a href="buffet.html">Buffet</a>
-        <a href="merch.html">Merchandising</a>
+<!-- BARRA SUPERIOR FIJA -->
+<header class="topbar">
+    <div class="topbar-left">
+        <!-- MENU -->
+        <div class="menu-container">
+            <img src="imagenes/img.tecN°24.png" class="menu-icon" onclick="toggleMenu()">
+            <div id="menu" class="menu">
+                <a href="index.html">Inicio</a>
+                <a href="buffet.html">Buffet</a>
+                <a href="merch.html">Merchandising</a>
+            </div>
+        </div>
+        <span class="topbar-brand">ET24 <strong>SHOP</strong></span>
     </div>
-</div>
 
-<header>
-    <h1>LA 24 SHOP</h1>
-    <p>Productos oficiales de la ET N°24</p>
+    <div class="topbar-right">
+        <input type="text" id="buscador" placeholder="Buscar producto..." onkeyup="buscar()">
+        <button onclick="window.location.href='compra.html'" class="btn-carrito">
+            🛒 <span>Ver carrito</span> <span id="contador-carrito" class="carrito-badge">0</span>
+        </button>
+    </div>
 </header>
+<!-- .topbar or .topbarleft .topbarbrand .topbarright -->
+
+<!-- HERO -->
+<section class="hero">
+    <span class="hero-eyebrow">Escuela Técnica N°24</span>
+    <h1>Merchandising Escolar</h1>
+    <p>Productos oficiales de la ET N°24</p>
+</section>
 
 <a href="index.html" class="btn-volver">← Volver</a>
 
-<input type="text" id="buscador" placeholder="Buscar producto..." onkeyup="buscar()">
-<div style="text-align:right; padding: 10px 30px;">
-    <button onclick="window.location.href='compra.html'" style="background:#111;">🛒 Ver carrito </button>
-</div>
-
-<!-- Carrousel, el css es body.css-->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carrusel Nativo</title>
+
+<!-- Carrousel, el css es body.css-->
 <div class="carousel-container">
         <!-- Pistas con las imágenes -->
         <div class="carousel-track">
             <div class="carousel-slide active">
-                <img src="imagenes/et24.jpg" alt="Banner 1">
+                <img src="imagenes/Taza_Amarilla.jpeg" alt="Banner 1">
             </div>
             <div class="carousel-slide">
-                <img src="imagenes/et24.jpg" alt="Banner 2">
+                <img src="imagenes/Taza_Azul.jpeg" alt="Banner 2">
             </div>
             <div class="carousel-slide">
-                <img src="imagenes/et24.jpg" alt="Banner 3">
+                <img src="imagenes/Taza_Et24.jpeg" alt="Banner 3">
             </div>
         </div>
 
@@ -58,19 +70,42 @@
         </div>
     </div>
 
+<!-- CATEGORÍAS — chips circulares estilo Miniso -->
+<nav class="cat-chips">
+    <button class="cat-chip active" data-cat="todos" onclick="filtrarCategoria('todos', this)">
+        <span class="cat-chip-icon">✨</span>
+        <span>Todos</span>
+    </button>
+    <button class="cat-chip" data-cat="indumentaria" onclick="filtrarCategoria('indumentaria', this)">
+        <span class="cat-chip-icon">👕</span>
+        <span>Indumentaria</span>
+    </button>
+    <button class="cat-chip" data-cat="tazas" onclick="filtrarCategoria('tazas', this)">
+        <span class="cat-chip-icon">☕</span>
+        <span>Tazas</span>
+    </button>
+    <button class="cat-chip" data-cat="componentes" onclick="filtrarCategoria('componentes', this)">
+        <span class="cat-chip-icon">📌</span>
+        <span>Componentes</span>
+    </button>
+</nav>
 
-<section>
+<section class="catalogo">
 
-    <h2 class="categoria-titulo">👕 Indumentaria</h2>
-    <div class="productos" id="contenedor-indumentaria"></div>
- 
-    <h2 class="categoria-titulo">☕ Tazas</h2>
-    <div class="productos" id="contenedor-tazas"></div>
+    <div class="categoria-bloque" data-categoria="indumentaria" id="cat-indumentaria">
+        <h2 class="categoria-titulo">👕 Indumentaria</h2>
+        <div class="productos" id="contenedor-indumentaria"></div>
+    </div>
 
-    <h2 class="categoria-titulo">📌 Componentes</h2>
-    <div class="productos" id="contenedor-componentes"></div>
+    <div class="categoria-bloque" data-categoria="tazas" id="cat-tazas">
+        <h2 class="categoria-titulo">☕ Tazas</h2>
+        <div class="productos" id="contenedor-tazas"></div>
+    </div>
 
-
+    <div class="categoria-bloque" data-categoria="componentes" id="cat-componentes">
+        <h2 class="categoria-titulo">📌 Componentes</h2>
+        <div class="productos" id="contenedor-componentes"></div>
+    </div>
 
 </section>
 

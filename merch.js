@@ -23,8 +23,25 @@ function buscar() {
     let cards = document.getElementsByClassName("card");
     for (let i = 0; i < cards.length; i++) {
         let texto = cards[i].innerText.toLowerCase();
-        cards[i].style.display = texto.includes(input) ? "block" : "none";
+        cards[i].style.display = texto.includes(input) ? "" : "none";
     }
+}
+
+// ==========================================
+// . FILTRO DE CATEGORÍAS (chips circulares)
+// ==========================================
+function filtrarCategoria(categoria, btn) {
+    document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    document.querySelectorAll('.categoria-bloque').forEach(bloque => {
+        const esTodos = categoria === 'todos';
+        const coincide = bloque.dataset.categoria === categoria;
+        bloque.style.display = (esTodos || coincide) ? "" : "none";
+    });
+
+    const buscador = document.getElementById('buscador');
+    if (buscador) buscador.value = "";
 }
 
 // ==========================================
@@ -140,22 +157,34 @@ async function cargarProductos() {
             'componentes': document.getElementById('contenedor-componentes')
         };
 
+        // Para saber cuál es el primer producto de cada categoría (badge "Nuevo")
+        const primerosDeCategoria = { indumentaria: true, tazas: true, componentes: true };
+
         productos.forEach(prod => {
             const cat = prod.categoria ? prod.categoria.toLowerCase() : '';
             const imagenUrl = prod.imagen ? `imagenes/${prod.imagen}` : 'imagenes/default.jpeg';
 
+            const esPrimero = primerosDeCategoria[cat];
+            if (contenedores[cat]) primerosDeCategoria[cat] = false;
+
+            const badge = esPrimero ? '<span class="badge-nuevo">Nuevo</span>' : '';
+
             const card = `
                 <div class="card">
-                    <img src="${imagenUrl}" alt="${prod.nombre}">
-                    <h2>${prod.nombre}</h2>
-                    <p>${prod.descripcion ? prod.descripcion : ''}</p>
-                    <span class="precio">$${prod.precio ? prod.precio : 0}</span>
-                    
-                    <div class="cantidad-contenedor">
-                        
-                         <button class="btn-cant" onclick="cambiarCantidad(this, 1)">+</button>
-                        <span class="cant">1</span>
-                        <button class="btn-cant" onclick="cambiarCantidad(this, -1)">−</button>
+                    <div class="card-media">
+                        ${badge}
+                        <img src="${imagenUrl}" alt="${prod.nombre}">
+                    </div>
+                    <div class="card-body">
+                        <h2>${prod.nombre}</h2>
+                        <p>${prod.descripcion ? prod.descripcion : ''}</p>
+                        <span class="precio">$${prod.precio ? prod.precio : 0}</span>
+
+                        <div class="cantidad-contenedor">
+                            <button class="btn-cant btn-menos" onclick="cambiarCantidad(this, -1)">−</button>
+                            <span class="cant">1</span>
+                            <button class="btn-cant btn-mas" onclick="cambiarCantidad(this, 1)">+</button>
+                        </div>
                     </div>
 
                     <button class="btn-comprar" onclick="agregarAlCarrito('${prod.id}', '${prod.nombre}', ${prod.precio || 0}, '${imagenUrl}', this)">
