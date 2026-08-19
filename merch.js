@@ -1,10 +1,10 @@
 // ==========================================
-// 1. VARIABLES GLOBALES
+// . VARIABLES GLOBALES
 // ==========================================
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // ==========================================
-// 2. AL CARGAR LA PÁGINA
+// . AL CARGAR LA PÁGINA
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     cargarProductos();     // Trae los productos de Neon
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 3. FUNCIONES DE INTERFAZ (Menú y Buscador)
+// . FUNCIONES DE INTERFAZ (Menú y Buscador)
 // ==========================================
 function toggleMenu() {
     document.getElementById("menu").classList.toggle("show");
@@ -28,7 +28,7 @@ function buscar() {
 }
 
 // ==========================================
-// 4. FUNCIONES DEL CARRITO
+// . FUNCIONES DEL CARRITO
 // ==========================================
 function cambiarCantidad(btn, cambio) {
     const spanCant = btn.parentElement.querySelector('.cant');
@@ -61,9 +61,73 @@ function actualizarContador() {
         contador.innerText = totalItems;
     }
 }
-
 // ==========================================
-// 5. CARGA DINÁMICA DESDE LA BASE DE DATOS (NEON)
+// .  CARROUSEL
+// ==========================================
+const track = document.querySelector('.carousel-track');
+const slides = Array.from(track.children);
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const dots = document.querySelectorAll('.dot');
+
+let currentIndex = 0;
+let autoSlideInterval;
+
+// Función para mover el carrusel a un índice específico
+function moveToSlide(index) {
+    if (index < 0) {
+        currentIndex = slides.length - 1;
+    } else if (index >= slides.length) {
+        currentIndex = 0;
+    } else {
+        currentIndex = index;
+    }
+
+    // Desplaza la pista horizontalmente
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+    // Actualiza el punto activo
+    dots.forEach(dot => dot.classList.remove('active'));
+    dots[currentIndex].classList.add('active');
+}
+
+// Botón Siguiente
+nextBtn.addEventListener('click', () => {
+    moveToSlide(currentIndex + 1);
+    resetAutoSlide();
+});
+
+// Botón Anterior
+prevBtn.addEventListener('click', () => {
+    moveToSlide(currentIndex - 1);
+    resetAutoSlide();
+});
+
+// Clic en los Puntos
+dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+        moveToSlide(index);
+        resetAutoSlide();
+    });
+});
+
+// Avance automático cada 4 segundos
+function startAutoSlide() {
+    autoSlideInterval = setInterval(() => {
+        moveToSlide(currentIndex + 1);
+    }, 4000);
+}
+
+// Reinicia el temporizador cuando el usuario interactúa
+function resetAutoSlide() {
+    clearInterval(autoSlideInterval);
+    startAutoSlide();
+}
+
+// Iniciar carrusel
+startAutoSlide();
+// ==========================================
+// . CARGA DINÁMICA DESDE LA BASE DE DATOS (NEON)
 // ==========================================
 async function cargarProductos() {
     try {
@@ -88,9 +152,10 @@ async function cargarProductos() {
                     <span class="precio">$${prod.precio ? prod.precio : 0}</span>
                     
                     <div class="cantidad-contenedor">
-                        <button class="btn-cant" onclick="cambiarCantidad(this, -1)">−</button>
+                        
+                         <button class="btn-cant" onclick="cambiarCantidad(this, 1)">+</button>
                         <span class="cant">1</span>
-                        <button class="btn-cant" onclick="cambiarCantidad(this, 1)">+</button>
+                        <button class="btn-cant" onclick="cambiarCantidad(this, -1)">−</button>
                     </div>
 
                     <button class="btn-comprar" onclick="agregarAlCarrito('${prod.id}', '${prod.nombre}', ${prod.precio || 0}, '${imagenUrl}', this)">
