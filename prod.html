@@ -1,0 +1,71 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>producto</title>
+    <link rel="stylesheet" href="prod.css">
+</head>
+<body>
+    <header class="topbar">
+    <div class="topbar-left">
+        <!-- MENU -->
+        <div class="menu-container">
+            <img src="imagenes/img.tecN°24.png" class="menu-icon" onclick="toggleMenu()">
+            <div id="menu" class="menu">
+                <a href="index.html">Inicio</a>
+                <a href="buffet.html">Buffet</a>
+                <a href="merch.html">Merchandising</a>
+            </div>
+        </div>
+        <span class="topbar-brand">ET24 <strong>SHOP</strong></span>
+    </div>
+
+    <div class="topbar-right">
+
+        <button onclick="window.location.href='merch.html'" class="btn-productos">
+        <span>Productos</span> <span id="texto-Productos" ></span>
+        </button>
+        <button onclick="window.location.href='homeET24.html'" class="btn-blog">
+            ✨ <span>Nuestro Blog</span> <span id="texto-blog" ></span>
+        </button>
+    </div>
+
+</header>
+
+
+<div class="container-prod">
+
+    <div class="prod-galeria">
+        <div class="prod-imagen-principal">
+            <button class="prod-nav prod-prev" id="prodPrev" aria-label="Imagen anterior">&#10094;</button>
+            <img id="prod-img-principal" src="" alt="">
+            <button class="prod-nav prod-next" id="prodNext" aria-label="Imagen siguiente">&#10095;</button>
+        </div>
+        <div class="prod-thumbs" id="prod-thumbs"></div>
+    </div>
+
+    <div class="prod-info">
+        <h1 id="prod-nombre">Cargando producto...</h1>
+        <span class="prod-precio" id="prod-precio"></span>
+        <p class="prod-descripcion" id="prod-descripcion"></p>
+
+        <div class="prod-cantidad-row">
+            <span class="prod-label">Cantidad</span>
+            <div class="cantidad-contenedor">
+                <button class="btn-cant btn-menos" onclick="cambiarCantidadProd(-1)">−</button>
+                <span class="cant" id="prod-cant">1</span>
+                <button class="btn-cant btn-mas" onclick="cambiarCantidadProd(1)">+</button>
+            </div>
+        </div>
+
+        <button class="btn-comprar-prod" id="btnAgregarProd">🛒 Agregar al carrito</button>
+        <button class="btn-comprar-ahora" id="btnComprarAhora">Comprar ahora</button>
+
+        
+    </div>
+
+</div>
+
+<script src="prod.js"></script>
+</body>
+</html>

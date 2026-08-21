@@ -166,7 +166,7 @@ a { text-decoration: none; }
     position: relative;
     background:
         linear-gradient(180deg, rgba(10,18,48,0.82) 0%, rgba(10,18,48,0.9) 65%, var(--navy-950) 100%),
-        url('imagenes/et24-edificio.jpg');
+        url('imagenes/et24.jpg');
     background-size: cover;
     background-position: center;
     color: var(--white);

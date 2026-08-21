@@ -1,0 +1,384 @@
+/* =========================================================
+   ET24 SHOP — prod.css
+   Hoja de estilos AUTOCONTENIDA para prod.html.
+   No depende de body.css: toda la paleta, tipografías y
+   estilos base están definidos acá mismo.
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --font-display: 'Baloo 2', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    --navy-950: #0a1230;
+    --navy-800: #142a52;
+    --navy-700: #1b3466;
+    --blue-500: #4a8fd6;
+    --blue-300: #8fc0ec;
+    --blue-100: #dcebfa;
+    --page-bg: #f5f9fd;
+    --gold-500: #f0b93d;
+    --gold-600: #d99e1d;
+    --gold-100: #fdf1d7;
+    --ink: #10192f;
+    --white: #ffffff;
+
+    --topbar-height: 68px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--page-bg);
+    color: var(--ink);
+    text-align: center;
+}
+
+a { text-decoration: none; }
+
+button { font-family: var(--font-display); cursor: pointer; }
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: 76px; /* Misma altura que la topbar de merch */
+    padding: 0 32px; /* Mayor espaciado horizontal */
+    background-color: var(--navy-950);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+
+.topbar-brand {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: 0.5px;
+}
+
+.topbar-brand strong { color: var(--gold-500); }
+
+/* Menú hamburguesa / Icono */
+.menu-container { position: relative; display: flex; align-items: center; }
+
+.menu-icon {
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    border-radius: 50%;
+    background-color: var(--white);
+    border: 2px solid var(--gold-500);
+    box-shadow: 0 2px 8px rgba(10,18,48,0.3);
+}
+
+.menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 54px;
+    background-color: var(--navy-800);
+    box-shadow: 0 10px 24px rgba(10,18,48,0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    flex-direction: row;
+    align-items: stretch;
+    white-space: nowrap;
+}
+
+.menu a {
+    font-family: var(--font-display);
+    display: block;
+    padding: 12px 18px;
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.menu a:hover { background-color: var(--gold-500); color: var(--navy-950); }
+.show { display: flex; }
+
+/*  botones originales con relleno ajustado */
+.btn-productos,
+.btn-blog {
+    font-family: var(--font-display);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 18px; /* Relleno ligeramente mayor para hacerlos más vistosos */
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-productos {
+    background-color: var(--gold-500);
+    color: var(--navy-950);
+}
+
+.btn-productos:hover { 
+    background-color: var(--white); 
+    transform: translateY(-1px);
+}
+
+.btn-blog {
+    background-color: transparent;
+    color: var(--white);
+    border: 2px solid var(--gold-500);
+}
+
+.btn-blog:hover { 
+    background-color: var(--gold-500); 
+    color: var(--navy-950); 
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   PÁGINA DE PRODUCTO — galería + panel de info
+   ========================================================= */
+.container-prod {
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    max-width: 1180px;
+    margin: 40px auto 70px;
+    padding: 0 24px;
+    text-align: left;
+}
+
+/* GALERÍA (imagen principal + miniaturas) */
+.prod-galeria {
+    flex: 1 1 480px;
+    max-width: 1040px;
+}
+
+.prod-imagen-principal {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: radial-gradient(circle at 50% 42%, var(--blue-100) 0%, var(--blue-100) 55%, var(--white) 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(10,18,48,0.08);
+    border: 1px solid rgba(143,192,236,0.35);
+}
+
+.prod-imagen-principal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 24px;
+}
+
+.prod-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--white);
+    border: none;
+    font-size: 15px;
+    color: var(--navy-800);
+    z-index: 5;
+    box-shadow: 0 3px 10px rgba(10,18,48,0.2);
+    transition: 0.2s;
+}
+
+.prod-nav:hover { background-color: var(--gold-500); color: var(--navy-950); transform: translateY(-50%) scale(1.08); }
+
+.prod-prev { left: 14px; }
+.prod-next { right: 14px; }
+
+.prod-thumbs {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    padding-bottom: 4px;
+    overflow-x: auto;
+}
+
+.prod-thumb {
+    width: 128px;
+    height: 128px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+    background-color: var(--blue-100);
+    border: 2px solid transparent;
+    transition: 0.2s;
+}
+
+.prod-thumb:hover { border-color: var(--blue-300); }
+.prod-thumb.active { border-color: var(--gold-500); }
+
+/* PANEL DE INFORMACIÓN Y COMPRA */
+.prod-info {
+    flex: 1 1 380px;
+    max-width: 480px;
+    padding-top: 4px;
+}
+
+#prod-nombre {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--navy-950);
+    margin-bottom: 14px;
+}
+
+.prod-precio {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gold-600);
+    display: block;
+    margin-bottom: 18px;
+}
+
+.prod-descripcion {
+    font-family: var(--font-body);
+    font-size: 28px;
+    line-height: 1.6;
+    color: #5a6480;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--blue-100);
+}
+
+.prod-cantidad-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.prod-label {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--navy-950);
+}
+
+/* Selector de cantidad — mismo lenguaje visual que las cards de merch.html */
+.cantidad-contenedor {
+    display: flex;
+    align-items: center;
+    background-color: var(--blue-100);
+    border-radius: 30px;
+    padding: 3px;
+    width: fit-content;
+}
+
+.btn-cant {
+    font-family: var(--font-display);
+    background-color: var(--white);
+    color: var(--navy-950);
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 15px;
+    font-weight: 700;
+    transition: 0.2s;
+    box-shadow: 0 1px 3px rgba(10,18,48,0.15);
+}
+
+.btn-cant:hover { background-color: var(--gold-500); }
+
+.cant {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy-950);
+}
+
+/* Botones de acción principales */
+.btn-comprar-prod,
+.btn-comprar-ahora {
+    display: block;
+    width: 100%;
+    font-family: var(--font-display);
+    border: none;
+    border-radius: 30px;
+    padding: 16px;
+    font-size: 20px;
+    font-weight: 700;
+    transition: 0.2s;
+    margin-bottom: 12px;
+}
+
+.btn-comprar-prod {
+    background-color: var(--gold-500);
+    color: var(--navy-950);
+}
+
+.btn-comprar-prod:hover { background-color: var(--gold-600); }
+
+.btn-comprar-ahora {
+    background-color: var(--navy-950);
+    color: var(--white);
+    margin-bottom: 20px;
+}
+
+.btn-comprar-ahora:hover { background-color: var(--navy-800); }
+
+.prod-volver {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy-700);
+}
+
+.prod-volver:hover { color: var(--gold-600); }
+
+.prod-error {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--navy-950);
+    padding: 40px 0;
+}
+
+.prod-error a {
+    color: var(--gold-600);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+    .container-prod { flex-direction: column; gap: 30px; margin-top: 24px; }
+    .prod-galeria, .prod-info { max-width: 100%; }
+}
+
+@media (max-width: 500px) {
+    .topbar-brand { display: none; }
+    .btn-productos span:last-child,
+    .btn-blog span:last-child { display: none; }
+    #prod-nombre { font-size: 22px; }
+}
