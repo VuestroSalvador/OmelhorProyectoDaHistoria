@@ -1,0 +1,182 @@
+/* =========================================================
+   ET24 SHOP — LOGIN DE EMPLEADOS
+   Mismo lenguaje visual que el Panel de Empleados
+   (paleta navy / dorado / crema, tipografía Baloo 2 + Inter,
+   tarjetas redondeadas estilo Miniso). No modifica la
+   estructura del HTML, solo el estilo.
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-display: 'Baloo 2', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    --navy-950: #0a1230;
+    --navy-800: #142a52;
+    --blue-500: #4a8fd6;
+    --blue-300: #8fc0ec;
+    --blue-100: #dcebfa;
+    --page-bg: #f7f2e6;
+    --gold-500: #f0b93d;
+    --gold-600: #d99e1d;
+    --ink: #10192f;
+    --white: #ffffff;
+    --red: #c0392b;
+    --text-muted: #6b7690;
+    --border-color: #ecdfc4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    background-color: var(--page-bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* ---------- Topbar de presentación ---------- */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: 68px;
+    padding: 0 24px;
+    background-color: var(--navy-950);
+    box-shadow: 0 4px 16px rgba(10,18,48,0.2);
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    white-space: nowrap;
+}
+
+.topbar-brand strong { color: var(--gold-500); }
+
+.topbar-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--white);
+    border: 2px solid var(--gold-500);
+    object-fit: cover;
+}
+
+.topbar-inicio {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--navy-950);
+    background-color: var(--gold-500);
+    padding: 9px 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.topbar-inicio:hover { background-color: var(--gold-600); }
+
+/* ---------- Caja de Login ---------- */
+.login-box {
+    max-width: 420px;
+    margin: 80px auto;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 28px rgba(10,18,48,0.1);
+    border-radius: 22px;
+    padding: 40px 36px;
+    text-align: center;
+}
+
+.login-box h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: var(--navy-950);
+    margin-bottom: 6px;
+}
+
+.login-box p {
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin-bottom: 24px;
+}
+
+/* ---------- Formulario ---------- */
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.formulario input {
+    font-family: var(--font-body);
+    background-color: var(--page-bg);
+    border: 1.5px solid var(--blue-300);
+    color: var(--ink);
+    padding: 13px 16px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+}
+
+.formulario input::placeholder { color: #9aa8bd; }
+
+.formulario input:focus {
+    outline: none;
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 3px rgba(240,185,61,0.25);
+}
+
+.formulario button {
+    font-family: var(--font-display);
+    font-weight: 700;
+    background-color: var(--gold-500);
+    color: var(--navy-950);
+    border: none;
+    padding: 14px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.formulario button:hover { background-color: var(--gold-600); }
+
+#error {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--red) !important;
+    text-align: left;
+    margin: -4px 0 0;
+}
+
+/* ---------- Botón Volver ---------- */
+.btn-volver {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: var(--navy-950);
+    color: var(--white);
+    border-radius: 30px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    text-decoration: none;
+    border: 2px solid var(--gold-500);
+    transition: 0.2s ease;
+    font-size: 0.85rem;
+}
+
+.btn-volver:hover { background-color: var(--gold-500); color: var(--navy-950); transform: scale(1.05); }

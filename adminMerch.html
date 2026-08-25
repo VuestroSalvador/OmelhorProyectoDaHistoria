@@ -1,56 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styleMerch.css">
-    <title>Administrar Productos — ET24</title>
+    <link rel="stylesheet" href="AdminMerch.css">
+    <title>Panel de Empleados — ET24 Shop</title>
 </head>
 <body>
-    <header class="banner">
-        <img src="imagenes/et24.jpg" alt="Edificio de la Escuela Técnica N°24" class="banner-img">
-        <div class="banner-overlay"></div>
-        <div class="banner-content">
-            <img src="imagenes/img.tecN°24.png" alt="Escudo ET24" class="banner-logo">
-            <span class="eyebrow">Escuela Técnica N.º 24 — Prácticas Profesionalizantes</span>
+    <!-- Encabezado Principal -->
+    <header class="top-header">
+        <div class="header-left">
+            <div class="logo-container">
+                <img src="imagenes/img.tecN°24.png" alt="Escudo ET24" class="header-logo">
+            </div>
+            <div class="header-titles">
+                <h1>PANEL DE EMPLEADOS</h1>
+                <p>Bienvenido, <span id="bienvenidaAdmin" class="text-gold">admin</span> · ET24 Shop</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-outline">← INICIO</button>
+            <button onclick="cerrarSesion()" class="btn-danger">CERRAR SESIÓN</button>
         </div>
     </header>
 
+    <!-- Franja separadora de rombos -->
     <div class="diamond-strip"></div>
 
-    <section class="admin">
-        <h1>Administrar Productos</h1>
-        <p>En esta sección puedes agregar o modificar productos.</p>
+    <main class="dashboard-container">
+        <!-- Tarjetas de Estadísticas -->
+        <section class="stats-row">
+            <div class="stat-card">
+                <h2 class="text-gold">3</h2>
+                <p>Pedidos pendientes</p>
+            </div>
+            <div class="stat-card">
+                <h2 class="text-green">5</h2>
+                <p>Ventas completadas</p>
+            </div>
+            <div class="stat-card">
+                <h2 class="text-green">$38.700</h2>
+                <p>Total recaudado</p>
+            </div>
+        </section>
 
-        <form id="form-producto">
-            <img src="imagenes/logopp.jpg" alt="Sello Prácticas Profesionalizantes ET24" class="stamp">
-            <label>Nombre del Producto
-                <input type="text" id="nombre" placeholder="Nombre del Producto" required>
-            </label>
-            <label>Categoría
-             <select id="categoria" required>
-                 <option value="" disabled selected>Seleccionar categoría</option>
-           </select>
-            </label>
-            <label>Precio
-                <input type="number" id="precio" placeholder="Precio" required>
-            </label>
-            <label>Descripción
-                <input type="text" id="descripcion" placeholder="Descripción" required>
-            </label>
-            <label>Stock
-                <input type="number" id="stock" placeholder="Stock" required>
-            </label>
-            <button type="submit" class="btn" id="btn-submit">Confirmar Producto</button>
-        </form>
-    </section>
+        <!-- Navegación de Pestañas -->
+        <nav class="tabs-nav">
+            <button class="tab-btn" onclick="abrirTab(event, 'tab-pedidos')">
+                📄 PEDIDOS RECIBIDOS <span class="badge">3</span>
+            </button>
+            <button class="tab-btn" onclick="abrirTab(event, 'tab-historial')">
+                📊 HISTORIAL DE COMPRAS <span class="badge">5</span>
+            </button>
+            <button class="tab-btn active" onclick="abrirTab(event, 'tab-catalogo')">
+                📦 CATÁLOGO DE PRODUCTOS <span class="badge">9</span>
+            </button>
+        </nav>
 
-    <div class="diamond-strip"></div>
+        <!-- PESTAÑA 1: Pedidos Recibidos (Ejemplo Visual) -->
+        <section id="tab-pedidos" class="tab-content">
+            <div class="section-header">
+                <h2 class="title-accent">PEDIDOS RECIBIDOS</h2>
+                <button class="btn-danger-outline">🗑 LIMPIAR TODOS</button>
+            </div>
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <span class="order-id text-gold">PED-001</span>
+                        <span class="badge-status bg-gold">PENDIENTE</span>
+                    </div>
+                    <div class="order-actions">
+                        <span class="order-total text-gold">$10.500</span>
+                        <button class="btn-success">✓ RESOLVER</button>
+                    </div>
+                </div>
+                <div class="order-body">
+                    <h3>Agustina Morales</h3>
+                    <p class="order-date">2024-06-25</p>
+                    <ul class="order-items">
+                        <li><span>2× Gorra ET24</span> <span>$9.000</span></li>
+                        <li><span>1× Llavero Maradona</span> <span>$1.500</span></li>
+                    </ul>
+                    <p class="order-delivery">🏫 Entrega en escuela</p>
+                </div>
+            </div>
+        </section>
 
-    <section class="catalogo">
-        <h2>Catálogo de Productos</h2>
-        <div class="catalogo-grid" id="catalogo-grid"></div>
-    </section>
+        <!-- PESTAÑA 2: Historial de Compras (Ejemplo Visual) -->
+        <section id="tab-historial" class="tab-content">
+            <div class="section-header">
+                <h2 class="title-accent">HISTORIAL DE COMPRAS</h2>
+            </div>
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <span class="order-id text-muted">PED-H01</span>
+                        <span class="badge-status bg-green">COMPLETADO</span>
+                    </div>
+                    <span class="order-total text-green">$6.500</span>
+                </div>
+                <div class="order-body">
+                    <h3>Juan Pérez</h3>
+                    <p class="order-date">2024-06-20</p>
+                    <ul class="order-items">
+                        <li><span>1× Chomba ET24</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PESTAÑA 3: Catálogo y Agregar Producto (Tu código adaptado) -->
+        <section id="tab-catalogo" class="tab-content active" style="display: block;">
+            
+            <div class="section-header">
+                <h2 class="title-accent">AGREGAR NUEVO PRODUCTO</h2>
+            </div>
+
+            <!-- Formulario adaptado al modo oscuro -->
+            <form id="form-producto" class="dark-form">
+                <div class="form-grid">
+                    <div class="form-group col-span-2">
+                        <label>NOMBRE DEL PRODUCTO *</label>
+                        <input type="text" id="nombre" placeholder="Ej: Remera ET24" required>
+                    </div>
+                    
+                    <div class="form-group col-span-2">
+                        <label>DESCRIPCIÓN *</label>
+                        <textarea id="descripcion" placeholder="Descripción del producto..." required rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>CATEGORÍA *</label>
+                        <select id="categoria" required>
+                            <option value="" disabled selected>Seleccionar categoría</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>PRECIO (ARS) *</label>
+                        <input type="number" id="precio" placeholder="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>STOCK *</label>
+                        <input type="number" id="stock" placeholder="Cantidad" required>
+                    </div>
+                </div>
+                <div class="form-footer">
+                    <button type="submit" class="btn-gold" id="btn-submit">+ AGREGAR PRODUCTO</button>
+                </div>
+            </form>
+
+            <div class="section-header" style="margin-top: 40px;">
+                <h2 class="title-accent">CATÁLOGO ACTUAL</h2>
+            </div>
+            <div class="catalogo-grid" id="catalogo-grid"></div>
+            
+        </section>
+    </main>
 
     <script src="adminMerch.js"></script>
 </body>

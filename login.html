@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Acceso Empleados</title>
     <link rel="stylesheet" href="body.css">
     <link rel="stylesheet" href="empleados.css">
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
 
-<!-- MENU -->
-<div class="menu-container">
-    <img src="img.tecN°24.png" class="menu-icon" onclick="toggleMenu()">
-    <div id="menu" class="menu">
-        <a href="index.html">Inicio</a>
-        <a href="buffet.html">Buffet</a>
-        <a href="merch.html">Merchandising</a>
-    </div>
-</div>
+<!-- TOPBAR -->
+<header class="topbar">
+    <a href="homeET24.html" class="topbar-brand">
+        <img src="imagenes/img.tecN°24.png" alt="Escudo ET24" class="topbar-logo">
+        <span>ET24 <strong>SHOP</strong></span>
+    </a>
+    <a href="homeET24.html" class="topbar-inicio">← Inicio</a>
+</header>
 
 <div class="login-box">
     <h1>🔒 Acceso Empleados</h1>
@@ -29,21 +30,16 @@
     </div>
 
     <br>
-    <a href="index.html" class="btn-volver">← Volver</a>
 </div>
 
 <script>
-function toggleMenu() {
-    document.getElementById("menu").classList.toggle("show");
-}
-
 function login() {
     let usuario = document.getElementById("usuario").value.trim();
     let contrasena = document.getElementById("contrasena").value.trim();
 
     if (usuario === "user01" && contrasena === "45370696") {
         localStorage.setItem("empleadoLogueado", usuario);
-        window.location.href = "empleados.html";
+        window.location.href = "adminMerch.html";
     } else {
         document.getElementById("error").style.display = "block";
     }

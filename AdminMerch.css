@@ -1,0 +1,265 @@
+/* =========================================================
+   ET24 SHOP — PANEL DE EMPLEADOS
+   Restyle para unificar la identidad visual con la tienda
+   (paleta navy / dorado / celeste, tipografía Baloo 2 + Inter,
+   tarjetas redondeadas estilo Miniso). No se modificó la
+   estructura ni distribución del HTML, solo el estilo.
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-display: 'Baloo 2', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    --navy-950: #0a1230;
+    --navy-800: #142a52;
+    --navy-700: #1b3466;
+    --blue-500: #4a8fd6;
+    --blue-300: #8fc0ec;
+    --blue-100: #dcebfa;
+    --page-bg: #f7f2e6;
+    --gold-500: #f0b93d;
+    --gold-600: #d99e1d;
+    --gold-100: #fdf1d7;
+    --ink: #10192f;
+    --white: #ffffff;
+
+    --green: #37A148;
+    --green-bg: #e4f5e7;
+    --red: #c0392b;
+    --text-muted: #6b7690;
+    --border-color: #ecdfc4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--page-bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+}
+
+/* ---------- Header ---------- */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: var(--navy-950);
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 8px 20px rgba(10,18,48,0.18);
+}
+.header-left { display: flex; align-items: center; gap: 20px; }
+.logo-container {
+    width: 56px; height: 56px;
+    background-color: var(--white);
+    border: 3px solid var(--gold-500);
+    transform: rotate(45deg);
+    display: flex; justify-content: center; align-items: center;
+    border-radius: 16px;
+    box-shadow: 0 3px 10px rgba(10,18,48,0.3);
+}
+.header-logo {
+    width: 32px; transform: rotate(-45deg);
+}
+.header-titles h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.9rem; letter-spacing: 0.5px;
+    color: var(--white);
+    line-height: 1.15;
+}
+.header-titles p {
+    color: var(--blue-300);
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+}
+.header-actions { display: flex; gap: 12px; }
+
+/* Botones Generales */
+button {
+    font-family: var(--font-display);
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+    border: none;
+}
+.btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--blue-300);
+    color: var(--blue-100);
+    padding: 8px 18px;
+}
+.btn-outline:hover { background: rgba(255,255,255,0.08); border-color: var(--white); color: var(--white); }
+
+.btn-danger {
+    background: var(--red);
+    color: var(--white);
+    padding: 8px 18px;
+}
+.btn-danger:hover { background: #a8321f; }
+
+.btn-danger-outline {
+    background: transparent;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    padding: 6px 14px;
+    border-radius: 30px;
+}
+.btn-danger-outline:hover { background: var(--red); color: var(--white); }
+
+.btn-success {
+    background: var(--green);
+    color: var(--white);
+    padding: 8px 18px;
+}
+.btn-success:hover { background: #2c8339; }
+
+.btn-gold {
+    background: var(--gold-500);
+    color: var(--navy-950);
+    padding: 14px 30px;
+    font-size: 1rem;
+}
+.btn-gold:hover { background: var(--gold-600); }
+
+.text-gold { color: var(--gold-600); }
+.text-green { color: var(--green); }
+.text-muted { color: var(--text-muted); }
+.bg-gold { background-color: var(--gold-500); color: var(--navy-950); }
+.bg-green { background-color: var(--green-bg); color: var(--green); }
+
+/* ---------- Decoración (antes "rombos") ---------- */
+.diamond-strip {
+    height: 0;
+}
+
+/* ---------- Layout Principal ---------- */
+.dashboard-container { max-width: 1200px; margin: 30px auto 60px; padding: 0 24px; }
+
+/* ---------- Estadísticas ---------- */
+.stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;
+}
+.stat-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 14px rgba(10,18,48,0.06);
+    padding: 28px 20px; text-align: center; border-radius: 22px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(10,18,48,0.12); }
+.stat-card h2 { font-family: var(--font-display); font-weight: 700; font-size: 2.3rem; margin-bottom: 4px; }
+.stat-card p { color: var(--text-muted); font-size: 0.88rem; font-family: var(--font-body); }
+
+/* ---------- Pestañas (Tabs) ---------- */
+.tabs-nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+.tab-btn {
+    background-color: var(--white);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 12px 22px; display: flex; align-items: center; gap: 10px;
+    border-radius: 30px; font-size: 0.88rem;
+    box-shadow: 0 2px 8px rgba(10,18,48,0.05);
+}
+.tab-btn .badge {
+    background-color: var(--blue-100); color: var(--navy-800);
+    padding: 2px 9px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+}
+.tab-btn.active { background-color: var(--gold-500); color: var(--navy-950); border-color: var(--gold-500); }
+.tab-btn.active .badge { background-color: rgba(10,18,48,0.15); color: var(--navy-950); }
+.tab-btn:hover:not(.active) { border-color: var(--gold-500); color: var(--navy-950); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ---------- Títulos de Sección ---------- */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.title-accent {
+    font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.3px;
+    border-left: 5px solid var(--gold-500); padding-left: 12px; color: var(--navy-950);
+}
+
+/* ---------- Formulario ---------- */
+.dark-form {
+    background-color: var(--white);
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 14px rgba(10,18,48,0.06);
+    border-radius: 22px; margin-bottom: 40px;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.col-span-2 { grid-column: span 2; }
+.form-group label {
+    display: block; font-family: var(--font-display); font-weight: 600; font-size: 0.82rem;
+    color: var(--gold-600); margin-bottom: 8px; letter-spacing: 0.3px;
+}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    background-color: var(--page-bg);
+    border: 1.5px solid var(--blue-300);
+    color: var(--ink);
+    padding: 12px 14px; border-radius: 14px; font-family: var(--font-body);
+}
+.form-group input::placeholder, .form-group textarea::placeholder { color: #9aa8bd; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--gold-500); box-shadow: 0 0 0 3px rgba(240,185,61,0.25);
+}
+.form-footer { margin-top: 25px; }
+
+/* ---------- Catálogo (tarjetas estilo Miniso) ---------- */
+.catalogo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 22px; }
+.producto-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 14px rgba(10,18,48,0.06);
+    border-radius: 22px; overflow: hidden; display: flex; flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.producto-card:hover { transform: translateY(-6px); box-shadow: 0 16px 28px rgba(10,18,48,0.14); }
+.producto-img {
+    height: 200px;
+    background-size: cover; background-position: center;
+    background-color: var(--blue-100);
+    background-image: radial-gradient(circle at 50% 42%, var(--blue-100) 0%, var(--blue-100) 55%, var(--white) 100%);
+    position: relative;
+}
+.badge-cat {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--gold-500);
+    color: var(--navy-950);
+    font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+    padding: 5px 12px; border-radius: 20px;
+    box-shadow: 0 3px 8px rgba(10,18,48,0.2);
+}
+.producto-info { padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+.producto-info h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; margin: 0; color: var(--navy-950); }
+.producto-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; flex-grow: 1;}
+.producto-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color); }
+.producto-precio { font-family: var(--font-display); font-weight: 700; color: var(--gold-600); font-size: 1.2rem; }
+.producto-acciones { display: flex; gap: 10px; margin-top: 10px; }
+.producto-acciones button {
+    flex: 1; padding: 9px; border-radius: 20px; font-size: 0.78rem;
+    background: var(--page-bg); color: var(--navy-950); border: 1.5px solid var(--border-color);
+}
+.producto-acciones .btn-editar:hover { background: var(--gold-500); color: var(--navy-950); border-color: var(--gold-500); }
+.producto-acciones .btn-eliminar { opacity: 0.5; cursor: not-allowed; }
+
+/* ---------- Tarjetas de Pedidos ---------- */
+.order-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 14px rgba(10,18,48,0.06);
+    border-radius: 22px; margin-bottom: 16px; padding: 22px;
+}
+.order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+.order-id { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin-right: 10px; color: var(--navy-950); }
+.badge-status { font-family: var(--font-display); font-weight: 700; font-size: 0.72rem; padding: 5px 12px; border-radius: 20px; letter-spacing: 0.3px; }
+.order-actions { display: flex; align-items: center; gap: 15px; }
+.order-total { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; }
+.order-body h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; margin-bottom: 2px; color: var(--navy-950); }
+.order-date { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px; }
+.order-items { list-style: none; color: var(--text-muted); font-size: 0.92rem; margin-bottom: 15px; }
+.order-items li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border-color); }
+.order-delivery { font-size: 0.88rem; color: var(--blue-500); font-weight: 600; }
