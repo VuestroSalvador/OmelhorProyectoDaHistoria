@@ -164,15 +164,11 @@ async function cargarProductos() {
             const cat = prod.categoria ? prod.categoria.toLowerCase() : '';
             const imagenUrl = prod.imagen ? `imagenes/${prod.imagen}` : 'imagenes/default.jpeg';
 
-            const esPrimero = primerosDeCategoria[cat];
-            if (contenedores[cat]) primerosDeCategoria[cat] = false;
-
-            const badge = esPrimero ? '<span class="badge-nuevo">Nuevo</span>' : '';
-
+            
             const card = `
                 <div class="card">
                     <div class="card-media">
-                        ${badge}
+
                         <img src="${imagenUrl}" alt="${prod.nombre}">
                     </div>
                     <div class="card-body">

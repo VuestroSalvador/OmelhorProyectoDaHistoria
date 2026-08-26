@@ -158,40 +158,56 @@ function cargarEnFormulario(id) {
     form.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+
 // ---------- Crear / editar ----------
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const datosProducto = {
-        nombre: inputNombre.value.trim(),
-        precio: inputPrecio.value,
-        descripcion: inputDescripcion.value.trim(),
-        stock: inputStock.value,
-        id_categoria: selectCategoria.value,
-    };
+    // 1. Instanciamos FormData para enviar texto + archivos físicamente
+    const formData = new FormData();
+    formData.append("nombre", inputNombre.value.trim());
+    formData.append("precio", inputPrecio.value);
+    formData.append("descripcion", inputDescripcion.value.trim());
+    formData.append("stock", inputStock.value);
+    formData.append("id_categoria", selectCategoria.value);
+
+    // 2. Capturamos los archivos seleccionados en el input file
+    const inputImagenes = document.getElementById("imagenes");
+    if (inputImagenes && inputImagenes.files.length > 0) {
+        for (let i = 0; i < inputImagenes.files.length; i++) {
+            // 'imagenes' debe coincidir con upload.array('imagenes') en tu backend Express
+            formData.append("imagenes", inputImagenes.files[i]);
+        }
+    }
 
     try {
         let respuesta;
         if (editandoId !== null) {
+            // Edición de producto
             respuesta = await fetch(`${API_PRODUCTOS}/${editandoId}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datosProducto),
+                body: formData // NO agregar Headers de Content-Type acá
             });
         } else {
+            // Creación de producto
             respuesta = await fetch(API_PRODUCTOS, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datosProducto),
+                body: formData // NO agregar Headers de Content-Type acá
             });
         }
 
-        if (!respuesta.ok) throw new Error("Error al guardar el producto");
-
+        if (!respuesta.ok) {
+            const errorBackend = await respuesta.json();
+            console.error("Detalle exacto del backend:", errorBackend);
+            alert(`Error del servidor: ${errorBackend.error || 'No se pudo guardar'}`);
+            return;
+        }
+        // 3. Reseteo del estado y de la interfaz
         editandoId = null;
         btnSubmit.textContent = "+ AGREGAR PRODUCTO";
         form.reset();
         await cargarProductos();
+        
     } catch (error) {
         console.error(error);
         alert("No se pudo guardar el producto.");
