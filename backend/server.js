@@ -116,11 +116,15 @@ app.put('/api/productos/:id', upload.array('imagenes', 5), async (req, res) => {
         );
 
         if (req.files && req.files.length > 0) {
+            // 1. Borrar imágenes anteriores asociadas a este producto
+            await pool.query('DELETE FROM imagenes_producto WHERE "ID_producto" = $1', [id]);
+
+            // 2. Insertar las nuevas
             for (let i = 0; i < req.files.length; i++) {
                 const urlCloudinary = req.files[i].path;
                 await pool.query(
                     `INSERT INTO imagenes_producto ("ID_producto", url_imagen, orden) 
-                     VALUES ($1, $2, $3)`,
+                    VALUES ($1, $2, $3)`,
                     [id, urlCloudinary, i + 1]
                 );
             }

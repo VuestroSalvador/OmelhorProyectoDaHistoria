@@ -162,7 +162,9 @@ async function cargarProductos() {
 
         productos.forEach(prod => {
             const cat = prod.categoria ? prod.categoria.toLowerCase() : '';
-            const imagenUrl = prod.imagen ? `imagenes/${prod.imagen}` : 'imagenes/default.jpeg';
+          const imagenUrl = prod.url_imagen 
+                ? prod.url_imagen 
+                : "imagenes/img.tecN°24.png";
 
             
             const card = `

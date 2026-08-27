@@ -54,6 +54,7 @@ const inputDescripcion = document.getElementById("descripcion");
 const inputStock = document.getElementById("stock");
 const selectCategoria = document.getElementById("categoria");
 
+
 // ---------- Cargar categorías en el selector ----------
 async function cargarCategorias() {
     try {
@@ -98,9 +99,9 @@ function renderCatalogo() {
         const card = document.createElement("article");
         card.className = "producto-card";
 
-        const imagenUrl = producto.imagen
-            ? `imagenes/${producto.imagen}`
-            : "imagenes/img.tecN°24.png";
+        const imagenUrl = producto.url_imagen 
+                ? producto.url_imagen 
+                : "imagenes/img.tecN°24.png";
 
         // Obtenemos el nombre de la categoría si está disponible para la etiqueta
         const categoriaTexto = selectCategoria.querySelector(`option[value="${producto.id_categoria}"]`) 
@@ -143,7 +144,7 @@ function cargarEnFormulario(id) {
     inputPrecio.value = producto.precio;
     inputDescripcion.value = producto.descripcion ?? "";
     inputStock.value = producto.stock ?? "";
-    
+    //adaptar a que se carguen imagenes y cordinar todas las imagenes con cloudinary
     // Solo si tenés "id_categoria" viniendo de tu API:
     if(producto.id_categoria) {
         selectCategoria.value = producto.id_categoria;
