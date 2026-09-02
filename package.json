@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0"
+    "@neondatabase/serverless": "^1.1.0",
+    "cloudinary": "^1.41.3"
   }
 }
