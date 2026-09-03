@@ -1,4 +1,6 @@
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const express = require('express');
 const cors = require('cors');
 const { neon } = require('@neondatabase/serverless');
@@ -14,11 +16,16 @@ app.use(cors());
 app.use(express.json());
 
 // 2. CONEXIONES A BASE DE DATOS
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("CRÍTICO: La variable DATABASE_URL no está llegando al proceso.");
+}
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString
 });
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(connectionString);
 
 // 3. CONFIGURACIÓN DE CLOUDINARY Y MULTER
 cloudinary.config({
