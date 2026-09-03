@@ -24,7 +24,7 @@ if (!connectionString) {
 const pool = new Pool({
     connectionString
 });
-
+console.log('¿Existe DATABASE_URL?:', !!process.env.DATABASE_URL);
 const sql = neon(connectionString);
 
 // 3. CONFIGURACIÓN DE CLOUDINARY Y MULTER
