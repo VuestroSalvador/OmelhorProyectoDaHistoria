@@ -1,5 +1,9 @@
-const API_PRODUCTOS = "http://localhost:3000/api/productos";
-const API_CATEGORIAS = "http://localhost:3000/api/categorias";
+const BASE_URL = window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://24shop-seven.vercel.app";
+
+const API_PRODUCTOS = `${BASE_URL}/api/productos`;
+const API_CATEGORIAS = `${BASE_URL}/api/categorias`;
 
 let productos = [];
 let editandoId = null;

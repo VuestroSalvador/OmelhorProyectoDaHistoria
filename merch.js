@@ -2,7 +2,12 @@
 // . VARIABLES GLOBALES
 // ==========================================
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+const BASE_URL = window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://24shop-seven.vercel.app";
 
+const API_PRODUCTOS = `${BASE_URL}/api/productos`;
+const API_CATEGORIAS = `${BASE_URL}/api/categorias`;
 // ==========================================
 // . AL CARGAR LA PÁGINA
 // ==========================================
@@ -148,7 +153,7 @@ startAutoSlide();
 // ==========================================
 async function cargarProductos() {
     try {
-        const respuesta = await fetch('http://localhost:3000/api/productos');
+        const respuesta = await fetch(API_PRODUCTOS);
         const productos = await respuesta.json();
 
         const contenedores = {
