@@ -50,6 +50,13 @@ function filtrarCategoria(categoria, btn) {
 }
 
 // ==========================================
+// . NAVEGACIÓN A LA FICHA DE PRODUCTO (prod.html)
+// ==========================================
+function irAlProducto(id) {
+    window.location.href = `prod.html?id=${id}`;
+}
+
+// ==========================================
 // . FUNCIONES DEL CARRITO
 // ==========================================
 function cambiarCantidad(btn, cambio) {
@@ -166,14 +173,16 @@ async function cargarProductos() {
         const primerosDeCategoria = { indumentaria: true, tazas: true, componentes: true };
 
         productos.forEach(prod => {
-            const cat = prod.categoria ? prod.categoria.toLowerCase() : '';
+          const cat = prod.categoria ? prod.categoria.toLowerCase() : '';
           const imagenUrl = prod.url_imagen 
                 ? prod.url_imagen 
-                : "imagenes/img.tecN°24.png";
+                : "imagenes/img.tecN24.png";
 
-            
+            // La card entera es clickeable y lleva a la ficha de producto (prod.html).
+            // Los controles de cantidad y "Agregar al carrito" cortan la propagación
+            // del clic para poder usarse sin disparar la navegación.
             const card = `
-                <div class="card">
+                <div class="card" style="cursor:pointer;" onclick="irAlProducto('${prod.id}')">
                     <div class="card-media">
 
                         <img src="${imagenUrl}" alt="${prod.nombre}">
@@ -183,14 +192,14 @@ async function cargarProductos() {
                         <p>${prod.descripcion ? prod.descripcion : ''}</p>
                         <span class="precio">$${prod.precio ? prod.precio : 0}</span>
 
-                        <div class="cantidad-contenedor">
+                        <div class="cantidad-contenedor" onclick="event.stopPropagation()">
                             <button class="btn-cant btn-menos" onclick="cambiarCantidad(this, -1)">−</button>
                             <span class="cant">1</span>
                             <button class="btn-cant btn-mas" onclick="cambiarCantidad(this, 1)">+</button>
                         </div>
                     </div>
 
-                    <button class="btn-comprar" onclick="agregarAlCarrito('${prod.id}', '${prod.nombre}', ${prod.precio || 0}, '${imagenUrl}', this)">
+                    <button class="btn-comprar" onclick="event.stopPropagation(); agregarAlCarrito('${prod.id}', '${prod.nombre}', ${prod.precio || 0}, '${imagenUrl}', this)">
                         Agregar al carrito
                     </button>
                 </div>

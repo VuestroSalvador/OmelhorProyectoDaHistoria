@@ -4,9 +4,11 @@ const BASE_URL = window.location.hostname === "localhost"
 
 const API_PRODUCTOS = `${BASE_URL}/api/productos`;
 const API_CATEGORIAS = `${BASE_URL}/api/categorias`;
+const API_IMAGENES = `${BASE_URL}/api/imagenes`;
 
 let productos = [];
 let editandoId = null;
+let productoImagenesId = null; // producto que está abierto en el modal de imágenes
 
 // ---------- Autenticación ----------
 window.addEventListener("DOMContentLoaded", function() {
@@ -127,6 +129,7 @@ function renderCatalogo() {
                 
                 <div class="producto-acciones">
                     <button class="btn-editar" data-id="${producto.id}">Editar</button>
+                    <button class="btn-imagenes" data-id="${producto.id}">🖼 Gestionar imágenes</button>
                     <button class="btn-eliminar" data-id="${producto.id}" disabled title="Eliminar no disponible por el momento">Eliminar</button>
                 </div>
             </div>
@@ -136,6 +139,10 @@ function renderCatalogo() {
 
     document.querySelectorAll(".btn-editar").forEach(btn => {
         btn.addEventListener("click", () => cargarEnFormulario(btn.dataset.id));
+    });
+
+    document.querySelectorAll(".btn-imagenes").forEach(btn => {
+        btn.addEventListener("click", () => abrirModalImagenes(btn.dataset.id));
     });
 }
 
@@ -156,7 +163,12 @@ function cargarEnFormulario(id) {
 
     editandoId = id;
     btnSubmit.textContent = "Guardar Cambios";
-    
+
+    // Al editar, la imagen ya no se toca desde este formulario
+    // (se gestiona aparte con "🖼 Gestionar imágenes"), así que no la exigimos.
+    const inputImagenesForm = document.getElementById("imagenes");
+    if (inputImagenesForm) inputImagenesForm.required = false;
+
     // Al editar nos aseguramos de estar en la pestaña catálogo
     document.querySelector('.tabs-nav button:nth-child(3)').click();
     
@@ -211,6 +223,7 @@ form.addEventListener("submit", async (e) => {
         editandoId = null;
         btnSubmit.textContent = "+ AGREGAR PRODUCTO";
         form.reset();
+        if (inputImagenes) inputImagenes.required = true; // volvemos a modo "crear producto nuevo"
         await cargarProductos();
         
     } catch (error) {
@@ -221,3 +234,163 @@ form.addEventListener("submit", async (e) => {
 
 cargarCategorias();
 cargarProductos();
+
+// Modo por defecto = "crear producto nuevo", así que la imagen es obligatoria
+const inputImagenesInicial = document.getElementById("imagenes");
+if (inputImagenesInicial) inputImagenesInicial.required = true;
+
+// ==========================================================
+// . MODAL "GESTIONAR IMÁGENES" — reemplazar una imagen puntual
+//   o agregar nuevas sin borrar las que ya existen
+// ==========================================================
+const modalOverlay = document.getElementById("modal-imagenes-overlay");
+const modalGrid = document.getElementById("modal-imagenes-grid");
+const modalVacio = document.getElementById("modal-imagenes-vacio");
+const modalTitulo = document.getElementById("modal-imagenes-titulo");
+const inputAgregarImagenes = document.getElementById("input-agregar-imagenes");
+
+async function abrirModalImagenes(idProducto) {
+    productoImagenesId = idProducto;
+
+    const producto = productos.find(p => String(p.id) === String(idProducto));
+    modalTitulo.textContent = producto ? `Gestionar imágenes — ${producto.nombre}` : "Gestionar imágenes";
+
+    modalOverlay.classList.add("show");
+    await cargarImagenesDelModal();
+}
+
+function cerrarModalImagenes() {
+    modalOverlay.classList.remove("show");
+    productoImagenesId = null;
+    if (inputAgregarImagenes) inputAgregarImagenes.value = "";
+}
+
+async function cargarImagenesDelModal() {
+    if (!productoImagenesId) return;
+
+    modalGrid.innerHTML = "";
+    modalVacio.style.display = "none";
+
+    try {
+        const respuesta = await fetch(`${API_PRODUCTOS}/${productoImagenesId}/imagenes`);
+        if (!respuesta.ok) throw new Error("No se pudieron obtener las imágenes");
+        const imagenes = await respuesta.json();
+
+        if (imagenes.length === 0) {
+            modalVacio.style.display = "block";
+            return;
+        }
+
+        imagenes.forEach((img) => {
+            const item = document.createElement("div");
+            item.className = "modal-img-item";
+            item.innerHTML = `
+                <img src="${img.url_imagen}" alt="Imagen del producto">
+                <div class="modal-img-acciones">
+                    <button class="btn-reemplazar-img" data-img-id="${img.id}">Reemplazar</button>
+                    <button class="btn-eliminar-img" data-img-id="${img.id}">Eliminar</button>
+                </div>
+                <input type="file" accept="image/*" data-reemplazo-de="${img.id}" style="display:none;">
+            `;
+            modalGrid.appendChild(item);
+        });
+
+        // Botón "Reemplazar" abre el selector de archivo oculto de esa imagen puntual
+        modalGrid.querySelectorAll(".btn-reemplazar-img").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const inputOculto = modalGrid.querySelector(`input[data-reemplazo-de="${btn.dataset.imgId}"]`);
+                inputOculto.click();
+            });
+        });
+
+        // Al elegir el archivo nuevo, se sube automáticamente
+        modalGrid.querySelectorAll('input[type="file"][data-reemplazo-de]').forEach((input) => {
+            input.addEventListener("change", () => reemplazarImagen(input.dataset.reemplazoDe, input));
+        });
+
+        modalGrid.querySelectorAll(".btn-eliminar-img").forEach((btn) => {
+            btn.addEventListener("click", () => eliminarImagen(btn.dataset.imgId));
+        });
+
+    } catch (error) {
+        console.error(error);
+        modalGrid.innerHTML = `<p style="color:#ff8080; font-size:13px;">No se pudieron cargar las imágenes.</p>`;
+    }
+}
+
+async function reemplazarImagen(idImagen, inputFile) {
+    if (!inputFile.files || inputFile.files.length === 0) return;
+
+    const formData = new FormData();
+    formData.append("imagen", inputFile.files[0]);
+
+    try {
+        const respuesta = await fetch(`${API_IMAGENES}/${idImagen}`, {
+            method: "PUT",
+            body: formData
+        });
+
+        if (!respuesta.ok) {
+            const errorBackend = await respuesta.json();
+            alert(`No se pudo reemplazar la imagen: ${errorBackend.error || "error desconocido"}`);
+            return;
+        }
+
+        await cargarImagenesDelModal();
+        await cargarProductos(); // refresca también la miniatura del catálogo si era la principal
+    } catch (error) {
+        console.error(error);
+        alert("No se pudo reemplazar la imagen.");
+    }
+}
+
+async function agregarImagenes() {
+    if (!productoImagenesId) return;
+    if (!inputAgregarImagenes.files || inputAgregarImagenes.files.length === 0) {
+        alert("Elegí al menos una imagen para agregar.");
+        return;
+    }
+
+    const formData = new FormData();
+    for (let i = 0; i < inputAgregarImagenes.files.length; i++) {
+        formData.append("imagenes", inputAgregarImagenes.files[i]);
+    }
+
+    try {
+        const respuesta = await fetch(`${API_PRODUCTOS}/${productoImagenesId}/imagenes`, {
+            method: "POST",
+            body: formData
+        });
+
+        if (!respuesta.ok) {
+            const errorBackend = await respuesta.json();
+            alert(`No se pudieron agregar las imágenes: ${errorBackend.error || "error desconocido"}`);
+            return;
+        }
+
+        inputAgregarImagenes.value = "";
+        await cargarImagenesDelModal();
+        await cargarProductos();
+    } catch (error) {
+        console.error(error);
+        alert("No se pudieron agregar las imágenes.");
+    }
+}
+
+async function eliminarImagen(idImagen) {
+    if (!confirm("¿Eliminar esta imagen? No se puede deshacer.")) return;
+
+    try {
+        const respuesta = await fetch(`${API_IMAGENES}/${idImagen}`, { method: "DELETE" });
+        if (!respuesta.ok) {
+            const errorBackend = await respuesta.json();
+            alert(`No se pudo eliminar: ${errorBackend.error || "error desconocido"}`);
+            return;
+        }
+        await cargarImagenesDelModal();
+        await cargarProductos();
+    } catch (error) {
+        console.error(error);
+        alert("No se pudo eliminar la imagen.");
+    }
+}

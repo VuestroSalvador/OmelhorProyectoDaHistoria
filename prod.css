@@ -185,6 +185,14 @@ button { font-family: var(--font-display); cursor: pointer; }
     height: 100%;
     object-fit: contain;
     padding: 24px;
+    cursor: zoom-in;
+    transition: transform 0.15s ease-out;
+}
+
+/* Zoom estilo lupa: la clase se activa/desactiva desde prod.js
+   según la posición del mouse sobre la imagen */
+.prod-imagen-principal img.zoom-activo {
+    transform: scale(2.2);
 }
 
 .prod-nav {
@@ -258,7 +266,7 @@ button { font-family: var(--font-display); cursor: pointer; }
 
 .prod-descripcion {
     font-family: var(--font-body);
-    font-size: 28px;
+    font-size: 21px;
     line-height: 1.6;
     color: #5a6480;
     margin-bottom: 24px;

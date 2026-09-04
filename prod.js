@@ -6,11 +6,20 @@ let cantidadActual = 1;
 let imagenesGaleria = [];
 let indiceImagenActual = 0;
 
+// Misma lógica que merch.js: usa el backend local si estás en localhost,
+// y el backend deployado en Vercel en cualquier otro dominio.
+const BASE_URL = window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://24shop-seven.vercel.app";
+
+const API_PRODUCTOS = `${BASE_URL}/api/productos`;
+
 // ==========================================
 // . AL CARGAR LA PÁGINA
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     cargarProducto();
+    inicializarZoomImagen();
 
     document.getElementById('prodPrev').addEventListener('click', () => {
         const nuevo = indiceImagenActual === 0 ? imagenesGaleria.length - 1 : indiceImagenActual - 1;
@@ -39,7 +48,7 @@ async function cargarProducto() {
     const contenedorInfo = document.querySelector('.prod-info');
 
     try {
-        const respuesta = await fetch('http://localhost:3000/api/productos');
+        const respuesta = await fetch(API_PRODUCTOS);
         const productos = await respuesta.json();
 
         // Si la URL no trae ?id=, mostramos el primer producto como referencia
@@ -65,7 +74,7 @@ async function cargarProducto() {
 // . RENDERIZADO DE LA INFO Y LA GALERÍA
 // ==========================================
 function renderizarProducto(prod) {
-    const imagenUrl = prod.imagen ? `imagenes/${prod.imagen}` : 'imagenes/default.jpeg';
+    const imagenUrl = prod.url_imagen ? prod.url_imagen : 'imagenes/default.jpeg';
 
     // Nota: solo tenemos una foto por producto en la base de datos.
     // Repetimos la misma imagen como placeholder para armar la galería de miniaturas.
@@ -116,7 +125,7 @@ function agregarAlCarritoProd(comprarAhora) {
     if (!productoActual) return;
 
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    const imagenUrl = productoActual.imagen ? `imagenes/${productoActual.imagen}` : 'imagenes/default.jpeg';
+    const imagenUrl = productoActual.url_imagen ? productoActual.url_imagen : 'imagenes/default.jpeg';
 
     const index = carrito.findIndex(item => item.id === productoActual.id);
     if (index !== -1) {
@@ -138,4 +147,27 @@ function agregarAlCarritoProd(comprarAhora) {
     } else {
         alert(`¡Se agregaron ${cantidadActual} unidad(es) de "${productoActual.nombre}" al carrito!`);
     }
+}
+
+// ==========================================
+// . ZOOM DE IMAGEN AL PASAR EL MOUSE (estilo lupa)
+// ==========================================
+function inicializarZoomImagen() {
+    const contenedor = document.querySelector('.prod-imagen-principal');
+    const img = document.getElementById('prod-img-principal');
+    if (!contenedor || !img) return;
+
+    contenedor.addEventListener('mousemove', (e) => {
+        const rect = contenedor.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        // Mueve el "foco" del zoom hacia donde está el cursor
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.classList.add('zoom-activo');
+    });
+
+    contenedor.addEventListener('mouseleave', () => {
+        img.classList.remove('zoom-activo');
+    });
 }
