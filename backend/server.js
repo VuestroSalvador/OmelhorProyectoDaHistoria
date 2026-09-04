@@ -17,6 +17,7 @@ app.use(express.json());
 
 // 2. CONEXIONES A BASE DE DATOS
 const connectionString = process.env.DATABASE_URL;
+console.log('¿Existe DATABASE_URL?:', !!process.env.DATABASE_URL);
 
 if (!connectionString) {
   throw new Error("CRÍTICO: La variable DATABASE_URL no está llegando al proceso.");
@@ -24,7 +25,7 @@ if (!connectionString) {
 const pool = new Pool({
     connectionString
 });
-console.log('¿Existe DATABASE_URL?:', !!process.env.DATABASE_URL);
+
 const sql = neon(connectionString);
 
 // 3. CONFIGURACIÓN DE CLOUDINARY Y MULTER
@@ -208,6 +209,105 @@ app.post('/api/pedidos', async (req, res) => {
     } catch (error) {
         console.error('Error al registrar pedido:', error);
         res.status(500).json({ error: 'Error interno al procesar la compra: ' + error.message });
+    }
+});
+
+// ==========================================================
+// RUTAS NUEVAS — Gestión individual de imágenes por producto
+// (no tocan ni reemplazan las rutas de arriba)
+// ==========================================================
+
+// Listar todas las imágenes de un producto puntual
+app.get('/api/productos/:id/imagenes', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const resultado = await pool.query(
+            'SELECT id, url_imagen, orden FROM imagenes_producto WHERE "ID_producto" = $1 ORDER BY orden ASC',
+            [id]
+        );
+        res.json(resultado.rows);
+    } catch (error) {
+        console.error('Error al obtener imágenes del producto:', error);
+        res.status(500).json({ error: 'Error al obtener imágenes del producto' });
+    }
+});
+
+// Agregar una o más imágenes NUEVAS a un producto, SIN borrar las existentes
+app.post('/api/productos/:id/imagenes', upload.array('imagenes', 5), async (req, res) => {
+    const { id } = req.params;
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: 'No se recibió ninguna imagen.' });
+        }
+
+        // Calculamos el próximo número de orden para no pisar las que ya existen
+        const ordenResultado = await pool.query(
+            'SELECT COALESCE(MAX(orden), 0) AS max_orden FROM imagenes_producto WHERE "ID_producto" = $1',
+            [id]
+        );
+        let siguienteOrden = ordenResultado.rows[0].max_orden;
+
+        const nuevasImagenes = [];
+        for (const file of req.files) {
+            siguienteOrden += 1;
+            const urlCloudinary = file.path;
+            const insertado = await pool.query(
+                `INSERT INTO imagenes_producto ("ID_producto", url_imagen, orden) 
+                 VALUES ($1, $2, $3) RETURNING id, url_imagen, orden`,
+                [id, urlCloudinary, siguienteOrden]
+            );
+            nuevasImagenes.push(insertado.rows[0]);
+        }
+
+        res.status(201).json({ mensaje: 'Imágenes agregadas correctamente', imagenes: nuevasImagenes });
+    } catch (error) {
+        console.error('Error al agregar imágenes:', error);
+        res.status(500).json({ error: error.message || 'Error al agregar imágenes' });
+    }
+});
+
+// Reemplazar UNA imagen puntual por su propio id (no afecta a las demás del producto)
+app.put('/api/imagenes/:idImagen', upload.single('imagen'), async (req, res) => {
+    const { idImagen } = req.params;
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se recibió ninguna imagen nueva.' });
+        }
+        const urlCloudinary = req.file.path;
+        const actualizado = await pool.query(
+            `UPDATE imagenes_producto SET url_imagen = $1 WHERE id = $2 
+             RETURNING id, "ID_producto", url_imagen, orden`,
+            [urlCloudinary, idImagen]
+        );
+
+        if (actualizado.rows.length === 0) {
+            return res.status(404).json({ error: 'No se encontró esa imagen.' });
+        }
+
+        res.json({ mensaje: 'Imagen reemplazada correctamente', imagen: actualizado.rows[0] });
+    } catch (error) {
+        console.error('Error al reemplazar imagen:', error);
+        res.status(500).json({ error: error.message || 'Error al reemplazar imagen' });
+    }
+});
+
+// Eliminar UNA imagen puntual por su propio id
+app.delete('/api/imagenes/:idImagen', async (req, res) => {
+    const { idImagen } = req.params;
+    try {
+        const eliminado = await pool.query(
+            'DELETE FROM imagenes_producto WHERE id = $1 RETURNING id',
+            [idImagen]
+        );
+
+        if (eliminado.rows.length === 0) {
+            return res.status(404).json({ error: 'No se encontró esa imagen.' });
+        }
+
+        res.json({ mensaje: 'Imagen eliminada correctamente' });
+    } catch (error) {
+        console.error('Error al eliminar imagen:', error);
+        res.status(500).json({ error: error.message || 'Error al eliminar imagen' });
     }
 });
 
