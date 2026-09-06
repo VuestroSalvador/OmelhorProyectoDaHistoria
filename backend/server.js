@@ -311,9 +311,46 @@ app.delete('/api/imagenes/:idImagen', async (req, res) => {
     }
 });
 
+
 // 5. INICIALIZAR EL SERVIDOR
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor backend corriendo en http://localhost:${PORT}`);
 });
 module.exports = app
+
+
+// ==========================================================
+// RUTA NUEVA — Login de empleados con hash seguro
+// ==========================================================
+const bcrypt = require('bcrypt');
+
+// Asegúrate de tener express.json() configurado arriba en tus middlewares
+app.use(express.json());
+
+app.post('/api/login', async (req, res) => {
+    const { usuario, contrasena } = req.body;
+
+    try {
+        // Busca al empleado en la base de datos de Neon
+        const resultado = await pool.query('SELECT * FROM "Empleados" WHERE nombreusuario = $1', [usuario]);
+        
+        if (resultado.rows.length === 0) {
+            return res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
+        }
+
+        const empleado = resultado.rows[0];
+
+        // Compara la contraseña escrita con el hash seguro guardado
+        const coincide = await bcrypt.compare(contrasena, empleado.contraseñahash);
+
+        if (coincide) {
+            res.json({ exito: true, mensaje: "Acceso autorizado" });
+        } else {
+            res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+    }
+});

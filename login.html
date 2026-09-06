@@ -33,15 +33,27 @@
 </div>
 
 <script>
-function login() {
+async function login() {
     let usuario = document.getElementById("usuario").value.trim();
     let contrasena = document.getElementById("contrasena").value.trim();
 
-    if (usuario === "user01" && contrasena === "45370696") {
-        localStorage.setItem("empleadoLogueado", usuario);
-        window.location.href = "adminMerch.html";
-    } else {
-        document.getElementById("error").style.display = "block";
+    try {
+        let respuesta = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario, contrasena })
+        });
+
+        let resultado = await respuesta.json();
+
+        if (resultado.exito) {
+            localStorage.setItem("empleadoLogueado", usuario);
+            window.location.href = "adminMerch.html";
+        } else {
+            document.getElementById("error").style.display = "block";
+        }
+    } catch (error) {
+        console.error("Error al conectar con el servidor", error);
     }
 }
 </script>
