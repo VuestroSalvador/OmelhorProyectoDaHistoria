@@ -1,6 +1,26 @@
 {
+  "name": "et24-shop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "backend/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "type": "commonjs",
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
-    "cloudinary": "^1.41.3"
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^1.41.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "multer-storage-cloudinary": "^4.0.0",
+    "pg": "^8.23.0"
+  },
+  "allowScripts": {
+    "bcrypt@6.0.0": true,
+    "core-js@3.50.0": true
   }
 }

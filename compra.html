@@ -96,17 +96,22 @@ async function finalizarCompra() {
         total: totalAcumulado
     };
 
-    try {
-        // Enviar la orden al servidor backend
-        const respuesta = await fetch('http://localhost:3000/api/pedidos', { // Reemplazar por URL de Render en producción
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(pedidoData)
-        });
+    const BASE_URL = window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://24shop-seven.vercel.app";
 
-        const resultado = await respuesta.json();
+try {
+    // Enviar la orden al servidor backend
+    const respuesta = await fetch(`${BASE_URL}/api/pedidos`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(pedidoData)
+    });
+
+    const resultado = await respuesta.json();
+    // ... el resto sigue igual
 
         if (respuesta.ok) {
             alert(`¡Pedido #${resultado.idPedido} guardado con éxito! Gracias por tu compra.`);
