@@ -63,6 +63,7 @@ async function cargarProducto() {
 
         productoActual = producto;
         renderizarProducto(producto);
+        await cargarGaleriaProducto(producto);
 
     } catch (error) {
         console.error('Error al conectar con el servidor backend:', error);
@@ -71,32 +72,64 @@ async function cargarProducto() {
 }
 
 // ==========================================
-// . RENDERIZADO DE LA INFO Y LA GALERÍA
+// . GALERÍA REAL DEL PRODUCTO
+// Trae TODAS las imágenes que el admin cargó para este producto
+// (tabla imagenes_producto, vía /api/productos/:id/imagenes) y arma
+// la galería con esa cantidad exacta, en el mismo orden en que se subieron.
 // ==========================================
-function renderizarProducto(prod) {
-    const imagenUrl = prod.url_imagen ? prod.url_imagen : 'imagenes/default.jpeg';
+async function cargarGaleriaProducto(prod) {
+    try {
+        const respuesta = await fetch(`${API_PRODUCTOS}/${prod.id}/imagenes`);
+        if (!respuesta.ok) throw new Error('No se pudieron obtener las imágenes del producto');
+        const imagenes = await respuesta.json();
 
-    // Nota: solo tenemos una foto por producto en la base de datos.
-    // Repetimos la misma imagen como placeholder para armar la galería de miniaturas.
-    imagenesGaleria = [imagenUrl, imagenUrl, imagenUrl, imagenUrl];
+        if (imagenes.length > 0) {
+            imagenesGaleria = imagenes.map(img => img.url_imagen);
+        } else {
+            // Este producto todavía no tiene filas en imagenes_producto:
+            // usamos la única imagen que trae el listado general como respaldo.
+            imagenesGaleria = [prod.url_imagen ? prod.url_imagen : 'imagenes/default.jpeg'];
+        }
+    } catch (error) {
+        console.error('Error al cargar la galería del producto:', error);
+        imagenesGaleria = [prod.url_imagen ? prod.url_imagen : 'imagenes/default.jpeg'];
+    }
+
+    renderizarGaleria(prod.nombre);
+}
+
+// Dibuja la imagen principal + la tira de miniaturas a partir de imagenesGaleria
+function renderizarGaleria(nombreProducto) {
     indiceImagenActual = 0;
 
-    document.getElementById('prod-img-principal').src = imagenUrl;
-    document.getElementById('prod-img-principal').alt = prod.nombre;
-    document.getElementById('prod-nombre').innerText = prod.nombre;
-    document.getElementById('prod-precio').innerText = `$${prod.precio ? prod.precio : 0}`;
-    document.getElementById('prod-descripcion').innerText = prod.descripcion ? prod.descripcion : '';
+    document.getElementById('prod-img-principal').src = imagenesGaleria[0];
+    document.getElementById('prod-img-principal').alt = nombreProducto;
 
     const thumbs = document.getElementById('prod-thumbs');
     thumbs.innerHTML = '';
     imagenesGaleria.forEach((src, i) => {
         const thumb = document.createElement('img');
         thumb.src = src;
-        thumb.alt = `${prod.nombre} - vista ${i + 1}`;
+        thumb.alt = `${nombreProducto} - vista ${i + 1}`;
         thumb.className = 'prod-thumb' + (i === 0 ? ' active' : '');
         thumb.addEventListener('click', () => mostrarImagen(i));
         thumbs.appendChild(thumb);
     });
+
+    // Si solo hay una imagen, no tiene sentido mostrar flechas ni miniaturas
+    const hayVariasImagenes = imagenesGaleria.length > 1;
+    document.getElementById('prodPrev').style.display = hayVariasImagenes ? '' : 'none';
+    document.getElementById('prodNext').style.display = hayVariasImagenes ? '' : 'none';
+    thumbs.style.display = hayVariasImagenes ? '' : 'none';
+}
+
+// ==========================================
+// . RENDERIZADO DE LA INFO Y LA GALERÍA
+// ==========================================
+function renderizarProducto(prod) {
+    document.getElementById('prod-nombre').innerText = prod.nombre;
+    document.getElementById('prod-precio').innerText = `$${prod.precio ? prod.precio : 0}`;
+    document.getElementById('prod-descripcion').innerText = prod.descripcion ? prod.descripcion : '';
 
     document.getElementById('btnAgregarProd').onclick = () => agregarAlCarritoProd(false);
     document.getElementById('btnComprarAhora').onclick = () => agregarAlCarritoProd(true);
