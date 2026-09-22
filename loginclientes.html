@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión — ET24 SHOP</title>
+    <link rel="stylesheet" href="body.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <a href="homeET24.html" class="topbar-brand">
+        <img src="https://res.cloudinary.com/lnjdanbc/image/upload/v1787790201/img.tecN_24.png" alt="Escudo ET24" class="topbar-logo">
+        <span>ET24 <strong>SHOP</strong></span>
+    </a>
+    <a href="merch.html" class="topbar-inicio">← Volver a la tienda</a>
+</header>
+
+<div class="login-box">
+    <h1> Tu Cuenta</h1>
+    <p>Ingresá tus datos para continuar tu compra</p>
+
+    <div class="formulario">
+        <input type="text" id="usuario" placeholder="Correo o usuario">
+        <input type="password" id="contrasena" placeholder="Contraseña">
+        <p id="error" style="color:red; display:none;">❌ Usuario o contraseña incorrectos</p>
+        <button onclick="loginCliente()">Ingresar</button>
+    </div>
+
+    <!-- ✏️ EDITAR: si van a tener registro de clientes nuevos, este es el lugar del link -->
+    <p class="login-alt">¿Todavía no tenés cuenta? <a href="registroCliente.html">Registrate acá</a></p>
+
+    <br>
+</div>
+
+<script src="loginCliente.js"></script>
+
+</body>
+</html>

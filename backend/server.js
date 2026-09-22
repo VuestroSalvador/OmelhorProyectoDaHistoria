@@ -313,11 +313,17 @@ app.delete('/api/imagenes/:idImagen', async (req, res) => {
 
 
 // 5. INICIALIZAR EL SERVIDOR
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor backend corriendo en http://localhost:${PORT}`);
-});
-module.exports = app
+// Solo levanta el servidor con app.listen cuando corrés este archivo
+// directamente (ej: "node server.js" en tu compu). Cuando Vercel lo
+// importa como módulo desde api/[...path].js, esto se saltea.
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor backend corriendo en http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
 
 
 // ==========================================================
