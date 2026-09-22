@@ -247,7 +247,10 @@ const modalOverlay = document.getElementById("modal-imagenes-overlay");
 const modalGrid = document.getElementById("modal-imagenes-grid");
 const modalVacio = document.getElementById("modal-imagenes-vacio");
 const modalTitulo = document.getElementById("modal-imagenes-titulo");
-const inputAgregarImagenes = document.getElementById("input-agregar-imagenes");
+let inputAgregarImagenes = document.getElementById("input-agregar-imagenes");
+const modalAgregarZona = document.getElementById("modal-agregar-zona");
+const MAX_IMAGENES_POR_PRODUCTO = 4;
+let cantidadImagenesModal = 0;
 
 async function abrirModalImagenes(idProducto) {
     productoImagenesId = idProducto;
@@ -275,6 +278,9 @@ async function cargarImagenesDelModal() {
         const respuesta = await fetch(`${API_PRODUCTOS}/${productoImagenesId}/imagenes`);
         if (!respuesta.ok) throw new Error("No se pudieron obtener las imágenes");
         const imagenes = await respuesta.json();
+        
+        cantidadImagenesModal = imagenes.length;
+        actualizarZonaAgregar();
 
         if (imagenes.length === 0) {
             modalVacio.style.display = "block";
@@ -350,6 +356,12 @@ async function agregarImagenes() {
         alert("Elegí al menos una imagen para agregar.");
         return;
     }
+    
+    const disponibles = MAX_IMAGENES_POR_PRODUCTO - cantidadImagenesModal;
+    if (inputAgregarImagenes.files.length > disponibles) {
+        alert(`Este producto ya tiene ${cantidadImagenesModal} de ${MAX_IMAGENES_POR_PRODUCTO} imágenes permitidas. Podés agregar hasta ${disponibles} más.`);
+        return;
+    }
 
     const formData = new FormData();
     for (let i = 0; i < inputAgregarImagenes.files.length; i++) {
@@ -392,5 +404,23 @@ async function eliminarImagen(idImagen) {
     } catch (error) {
         console.error(error);
         alert("No se pudo eliminar la imagen.");
+    }
+}
+
+// Muestra/oculta la zona de "+ Añadir imagen" según cuántas tiene ya el producto
+function actualizarZonaAgregar() {
+    if (!modalAgregarZona) return;
+
+    if (cantidadImagenesModal >= MAX_IMAGENES_POR_PRODUCTO) {
+        modalAgregarZona.innerHTML = `<p style="color:#9aa4bd; font-size:12px;">Este producto ya tiene el máximo de ${MAX_IMAGENES_POR_PRODUCTO} imágenes. Eliminá una para poder agregar otra.</p>`;
+    } else {
+        const disponibles = MAX_IMAGENES_POR_PRODUCTO - cantidadImagenesModal;
+        modalAgregarZona.innerHTML = `
+            <label>+ AÑADIR IMAGEN (hasta ${disponibles} más, máximo ${MAX_IMAGENES_POR_PRODUCTO} en total)</label>
+            <input type="file" id="input-agregar-imagenes" accept="image/*" multiple>
+            <button id="btn-agregar-imagenes" onclick="agregarImagenes()">+ Añadir imagen</button>
+        `;
+        // El input y el botón se recrearon: hay que volver a agarrar la referencia
+        inputAgregarImagenes = document.getElementById("input-agregar-imagenes");
     }
 }
