@@ -10,7 +10,7 @@ let indiceImagenActual = 0;
 // y el backend deployado en Vercel en cualquier otro dominio.
 const BASE_URL = window.location.hostname === "localhost"
     ? "http://localhost:3000"
-    : "https://24shop-seven.vercel.app";
+    : "https://express-js-on-vercel-self-omega-30.vercel.app";
 
 const API_PRODUCTOS = `${BASE_URL}/api/productos`;
 
