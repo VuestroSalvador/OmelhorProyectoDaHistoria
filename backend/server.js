@@ -8,6 +8,7 @@ const { Pool } = require('pg');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -79,7 +80,7 @@ app.get('/api/productos', async (req, res) => {
 });
 
 // Crear un producto nuevo
-app.post('/api/productos', upload.array('imagenes', 5), async (req, res) => {
+app.post('/api/productos', upload.array('imagenes', 4), async (req, res) => {
     try {
         const { nombre, precio, descripcion, stock, id_categoria } = req.body;
 
@@ -111,7 +112,7 @@ app.post('/api/productos', upload.array('imagenes', 5), async (req, res) => {
 });
 
 // Editar un producto existente
-app.put('/api/productos/:id', upload.array('imagenes', 5), async (req, res) => {
+app.put('/api/productos/:id', upload.array('imagenes', 4), async (req, res) => {
     const { id } = req.params;
     const { nombre, precio, descripcion, stock, id_categoria } = req.body;
 
@@ -233,11 +234,26 @@ app.get('/api/productos/:id/imagenes', async (req, res) => {
 });
 
 // Agregar una o más imágenes NUEVAS a un producto, SIN borrar las existentes
-app.post('/api/productos/:id/imagenes', upload.array('imagenes', 5), async (req, res) => {
+// Tope: 4 imágenes por producto en total (existentes + nuevas)
+app.post('/api/productos/:id/imagenes', upload.array('imagenes', 4), async (req, res) => {
     const { id } = req.params;
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ error: 'No se recibió ninguna imagen.' });
+        }
+
+        // Contamos cuántas imágenes tiene ya este producto para no pasarnos de 4 en total
+        const conteoResultado = await pool.query(
+            'SELECT COUNT(*)::int AS total FROM imagenes_producto WHERE "ID_producto" = $1',
+            [id]
+        );
+        const totalActual = conteoResultado.rows[0].total;
+
+        if (totalActual + req.files.length > 4) {
+            const disponibles = Math.max(0, 4 - totalActual);
+            return res.status(400).json({
+                error: `Este producto ya tiene ${totalActual} imagen(es). Solo podés agregar ${disponibles} más (máximo 4 en total).`
+            });
         }
 
         // Calculamos el próximo número de orden para no pisar las que ya existen
@@ -311,6 +327,35 @@ app.delete('/api/imagenes/:idImagen', async (req, res) => {
     }
 });
 
+// ==========================================================
+// RUTA — Login de empleados (con hash seguro vía bcrypt)
+// ==========================================================
+app.post('/api/login', async (req, res) => {
+    const { usuario, contrasena } = req.body;
+
+    try {
+        // Busca al empleado en la base de datos de Neon
+        const resultado = await pool.query('SELECT * FROM "Empleados" WHERE nombreusuario = $1', [usuario]);
+
+        if (resultado.rows.length === 0) {
+            return res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
+        }
+
+        const empleado = resultado.rows[0];
+
+        // Compara la contraseña escrita con el hash seguro guardado
+        const coincide = await bcrypt.compare(contrasena, empleado.contraseñahash);
+
+        if (coincide) {
+            res.json({ exito: true, mensaje: "Acceso autorizado" });
+        } else {
+            res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+    }
+});
 
 // 5. INICIALIZAR EL SERVIDOR
 // Solo levanta el servidor con app.listen cuando corrés este archivo
@@ -324,75 +369,3 @@ if (require.main === module) {
 }
 
 module.exports = app;
-
-
-// ==========================================================
-// RUTA NUEVA — Login de empleados con hash seguro
-// ==========================================================
-const bcrypt = require('bcrypt');
-
-// Asegúrate de tener express.json() configurado arriba en tus middlewares
-app.use(express.json());
-
-app.post('/api/login', async (req, res) => {
-    const { usuario, contrasena } = req.body;
-
-    try {
-        // Busca al empleado en la base de datos de Neon
-        const resultado = await pool.query('SELECT * FROM "Empleados" WHERE nombreusuario = $1', [usuario]);
-        
-        if (resultado.rows.length === 0) {
-            return res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
-        }
-
-        const empleado = resultado.rows[0];
-
-        // Compara la contraseña escrita con el hash seguro guardado
-        const coincide = await bcrypt.compare(contrasena, empleado.contraseñahash);
-
-        if (coincide) {
-            res.json({ exito: true, mensaje: "Acceso autorizado" });
-        } else {
-            res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
-    }
-});
-
-
-// ==========================================================
-// RUTA NUEVA — Login de clientes (falta con hash seguro)
-// ==========================================================
-const bcrypt = require('bcrypt');
-
-// Asegúrate de tener express.json() configurado arriba en tus middlewares
-app.use(express.json());
-
-app.post('/api/login', async (req, res) => {
-    const { usuario, contrasena } = req.body;
-
-    try {
-        // Busca al empleado en la base de datos de Neon
-        const resultado = await pool.query('SELECT * FROM "Empleados" WHERE nombreusuario = $1', [usuario]);
-        
-        if (resultado.rows.length === 0) {
-            return res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
-        }
-
-        const empleado = resultado.rows[0];
-
-        // Compara la contraseña escrita con el hash seguro guardado
-        const coincide = await bcrypt.compare(contrasena, empleado.contraseñahash);
-
-        if (coincide) {
-            res.json({ exito: true, mensaje: "Acceso autorizado" });
-        } else {
-            res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
-    }
-});
