@@ -23,6 +23,11 @@ function toggleMenu() {
     document.getElementById("menu").classList.toggle("show");
 }
 
+// Formatea un número como precio en pesos, con punto como separador de miles (ej: 18000 -> "18.000")
+function formatearPrecio(valor) {
+    return Number(valor || 0).toLocaleString('es-AR');
+}
+
 function buscar() {
     let input = document.getElementById("buscador").value.toLowerCase();
     let cards = document.getElementsByClassName("card");
@@ -190,7 +195,7 @@ async function cargarProductos() {
                     <div class="card-body">
                         <h2>${prod.nombre}</h2>
                         <p>${prod.descripcion ? prod.descripcion : ''}</p>
-                        <span class="precio">$${prod.precio ? prod.precio : 0}</span>
+                        <span class="precio">$${formatearPrecio(prod.precio)}</span>
 
                         <div class="cantidad-contenedor" onclick="event.stopPropagation()">
                             <button class="btn-cant btn-menos" onclick="cambiarCantidad(this, -1)">−</button>

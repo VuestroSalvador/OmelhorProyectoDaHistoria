@@ -55,7 +55,7 @@ a { text-decoration: none; }
 }
 
 .topbar-left { display: flex; align-items: center; gap: 12px; }
-.topbar-right { display: flex; align-items: center; gap: 14px; }
+
 .topbar-brand {
     font-family: var(--font-display);
     font-size: 18px;
@@ -104,26 +104,20 @@ a { text-decoration: none; }
 .menu a:hover { background-color: var(--gold-500); color: var(--navy-950); }
 .show { display: flex; }
 
-
+.topbar-right { display: flex; align-items: center; gap: 14px; }
 
 #buscador {
     font-family: var(--font-body);
-    margin: 25px auto;
-    padding: 12px 20px;
-    width: 300px;
-    border-radius: 25px;
-    border: 1px solid var(--blue-300);
-    font-size: 15px;
-    display: block;
-    background-color: var(--white);
-    box-shadow: 0 2px 8px rgba(10,18,48,0.12);
+    padding: 9px 18px;
+    width: 190px;
+    border-radius: 30px;
+    border: none;
+    font-size: 13px;
+    background-color: rgba(255,255,255,0.95);
 }
- 
-#buscador:focus {
-    outline: none;
-    border-color: var(--gold-500);
-    box-shadow: 0 0 0 3px rgba(240,185,61,0.35);
-}
+
+#buscador:focus { outline: none; box-shadow: 0 0 0 3px rgba(240,185,61,0.45); }
+
 .btn-carrito {
     font-family: var(--font-display);
     position: relative;
@@ -166,7 +160,7 @@ a { text-decoration: none; }
     position: relative;
     background:
         linear-gradient(180deg, rgba(10,18,48,0.82) 0%, rgba(10,18,48,0.9) 65%, var(--navy-950) 100%),
-        url('imagenes/et24.jpg');
+        url('https://res.cloudinary.com/lnjdanbc/image/upload/v1787790190/et24.jpg');
     background-size: cover;
     background-position: center;
     color: var(--white);
@@ -244,7 +238,7 @@ a { text-decoration: none; }
 
 .carousel-track { display: flex; transition: transform 0.5s ease-in-out; width: 100%; }
 .carousel-slide { min-width: 100%; }
-.carousel-slide img { width: 100%; height: 280px; object-fit: cover; display: block; }
+.carousel-slide img { width: 100%; height: 280px; object-fit: cover; object-position: center 42%; display: block; }
 
 .carousel-btn {
     position: absolute;
@@ -552,47 +546,4 @@ button { font-family: var(--font-display); }
     .cat-chips { gap: 16px; }
     .cat-chip-icon { width: 52px; height: 52px; font-size: 20px; }
     .productos { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-}
-
-
-/* Contenedor flotante en la esquina inferior izquierda */
-.social-float-container {
-  position: fixed; /* Mantiene los botones siempre visibles al hacer scroll */
-  bottom: 30px;    /* Separación respecto al borde inferior */
-  left: 30px;      /* Separación respecto al borde izquierdo */
-  display: flex;
-  flex-direction: column;
-  gap: 16px;       /* Espacio vertical entre los botones */
-  z-index: 9999;   /* Asegura que queden sobre las tarjetas del catálogo */
-}
-
-/* Estilo base de los botones */
-.social-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  text-decoration: none;
-}
-
-.social-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-}
-
-.social-btn img {
-  width: 28px;
-  height: 28px;
-}
-
-.wa {
-  background-color: #25D366;
-}
-
-.ig {
-  background-color: #ffffff;
 }

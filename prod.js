@@ -39,6 +39,11 @@ function toggleMenu() {
     document.getElementById("menu").classList.toggle("show");
 }
 
+// Formatea un número como precio en pesos, con punto como separador de miles (ej: 18000 -> "18.000")
+function formatearPrecio(valor) {
+    return Number(valor || 0).toLocaleString('es-AR');
+}
+
 // ==========================================
 // . CARGA DEL PRODUCTO DESDE LA BASE DE DATOS (NEON)
 // ==========================================
@@ -128,7 +133,7 @@ function renderizarGaleria(nombreProducto) {
 // ==========================================
 function renderizarProducto(prod) {
     document.getElementById('prod-nombre').innerText = prod.nombre;
-    document.getElementById('prod-precio').innerText = `$${prod.precio ? prod.precio : 0}`;
+    document.getElementById('prod-precio').innerText = `$${formatearPrecio(prod.precio)}`;
     document.getElementById('prod-descripcion').innerText = prod.descripcion ? prod.descripcion : '';
 
     document.getElementById('btnAgregarProd').onclick = () => agregarAlCarritoProd(false);
