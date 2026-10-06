@@ -1,6 +1,6 @@
 const BASE_URL = window.location.hostname === "localhost"
     ? "http://localhost:3000"
-    : "https://la24shop.vercel.app";
+    : "https://express-js-on-vercel-self-omega-30.vercel.app";
 
 const form = document.getElementById("form-registro");
 const btnSubmit = document.getElementById("btn-submit");
