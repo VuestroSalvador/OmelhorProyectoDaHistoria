@@ -49,16 +49,22 @@ const upload = multer({ storage: storage });
 
 // 4. RUTAS DE LA API
 
-// Obetner productos
+// Obtener productos
+// Por defecto SOLO devuelve los productos visibles (lo que usa la tienda de cara al cliente).
+// El panel de admin pide ?todos=true para ver también los que están ocultos.
 app.get('/api/productos', async (req, res) => {
     try {
-        const resultado = await pool.query(`
+        const { todos } = req.query;
+
+        // Si "todos" es verdadero, traemos todo; de lo contrario solo los visibles
+        let query = `
             SELECT 
                 p."ID_producto" AS id,
                 p."Nombre" AS nombre,
                 p."Precio" AS precio,
                 p."Descripcion" AS descripcion,
                 p."Stock" AS stock,
+                p."Visible",
                 p."ID_categoria" AS id_categoria,
                 c."categoria" AS categoria,
                 COALESCE(img.url_imagen, p."Imagen") AS url_imagen
@@ -69,13 +75,45 @@ app.get('/api/productos', async (req, res) => {
                 FROM imagenes_producto 
                 ORDER BY "ID_producto", orden ASC
             ) img ON p."ID_producto" = img."ID_producto"
-            ORDER BY p."ID_producto" DESC
-        `);
-        
+        `;
+
+        if (todos !== 'true') {
+            query += ` WHERE p."Visible" = true `;
+        }
+
+        query += ` ORDER BY p."ID_producto" DESC;`;
+
+        const resultado = await pool.query(query);
         res.json(resultado.rows);
     } catch (error) {
         console.error('Error al consultar Neon:', error);
         res.status(500).json({ error: 'Error al obtener productos' });
+    }
+});
+// Mostrar/ocultar un producto puntual (no lo borra, solo cambia su visibilidad)
+app.put('/api/productos/:id/visibilidad', async (req, res) => {
+    const { id } = req.params;
+    const { visible } = req.body;
+
+    if (typeof visible !== 'boolean') {
+        return res.status(400).json({ error: 'Falta indicar "visible" (true o false).' });
+    }
+
+    try {
+        const actualizado = await pool.query(
+            `UPDATE "Producto" SET "Visible" = $1 WHERE "ID_producto" = $2 
+             RETURNING "ID_producto" AS id, "Visible" AS visible`,
+            [visible, id]
+        );
+
+        if (actualizado.rows.length === 0) {
+            return res.status(404).json({ error: 'No se encontró ese producto.' });
+        }
+
+        res.json({ mensaje: visible ? 'Producto visible nuevamente' : 'Producto ocultado', producto: actualizado.rows[0] });
+    } catch (error) {
+        console.error('Error al cambiar la visibilidad:', error);
+        res.status(500).json({ error: error.message || 'Error al cambiar la visibilidad' });
     }
 });
 

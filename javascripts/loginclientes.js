@@ -1,6 +1,6 @@
 const BASE_URL = window.location.hostname === "localhost"
     ? "http://localhost:3000"
-    : "https://24shop-seven.vercel.app";
+    : "https://la24shop.vercel.app";
 
 async function loginCliente() {
     let usuario = document.getElementById("usuario").value.trim();

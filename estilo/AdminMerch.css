@@ -254,7 +254,28 @@ button {
     background: var(--page-bg); color: var(--navy-950); border: 1.5px solid var(--border-color);
 }
 .producto-acciones .btn-editar:hover { background: var(--gold-500); color: var(--navy-950); border-color: var(--gold-500); }
-.producto-acciones .btn-eliminar { opacity: 0.5; cursor: not-allowed; }
+
+/* Botón mostrar/ocultar */
+.producto-acciones .btn-ocultar:hover { background: var(--red); color: var(--white); border-color: var(--red); }
+.producto-acciones .btn-ocultar.activo {
+    background: var(--red);
+    color: var(--white);
+    border-color: var(--red);
+}
+.producto-acciones .btn-ocultar.activo:hover { background: var(--green); border-color: var(--green); }
+
+/* Tarjeta de un producto oculto: se ve atenuada para distinguirla a simple vista */
+.producto-card.oculto { opacity: 0.55; }
+.producto-card.oculto:hover { opacity: 0.85; }
+
+.badge-oculto {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--red);
+    color: var(--white);
+    font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+    padding: 5px 12px; border-radius: 20px;
+    box-shadow: 0 3px 8px rgba(10,18,48,0.25);
+}
 
 /* ---------- Tarjetas de Pedidos ---------- */
 .order-card {

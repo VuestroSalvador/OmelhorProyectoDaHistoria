@@ -1,6 +1,7 @@
-const BASE_URL = window.location.hostname === "localhost"
+const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const BASE_URL = isLocal
     ? "http://localhost:3000"
-    : "https://express-js-on-vercel-self-omega-30.vercel.app";
+    : "https://la24shop.vercel.app";
 
 const API_PRODUCTOS = `${BASE_URL}/api/productos`;
 const API_CATEGORIAS = `${BASE_URL}/api/categorias`;
@@ -82,7 +83,8 @@ async function cargarCategorias() {
 // ---------- Traer productos desde el backend ----------
 async function cargarProductos() {
     try {
-        const respuesta = await fetch(API_PRODUCTOS);
+        // ?todos=true: el panel de admin necesita ver también los productos ocultos
+        const respuesta = await fetch(`${API_PRODUCTOS}?todos=true`);
         if (!respuesta.ok) throw new Error("Error al obtener productos");
         productos = await respuesta.json();
         renderCatalogo();
@@ -103,7 +105,10 @@ function renderCatalogo() {
 
     productos.forEach((producto) => {
         const card = document.createElement("article");
-        card.className = "producto-card";
+        // producto.visible llega como boolean desde Postgres; si por alguna razón
+        // no viene (filas viejas antes de la migración), lo tratamos como visible.
+        const estaOculto = producto.visible === false;
+        card.className = "producto-card" + (estaOculto ? " oculto" : "");
 
         const imagenUrl = producto.url_imagen 
                 ? producto.url_imagen 
@@ -117,6 +122,7 @@ function renderCatalogo() {
         card.innerHTML = `
             <div class="producto-img" style="background-image: url('${imagenUrl}')">
                 <span class="badge-cat">${categoriaTexto.toUpperCase()}</span>
+                ${estaOculto ? '<span class="badge-oculto">🚫 OCULTO</span>' : ''}
             </div>
             <div class="producto-info">
                 <h3>${producto.nombre}</h3>
@@ -130,7 +136,9 @@ function renderCatalogo() {
                 <div class="producto-acciones">
                     <button class="btn-editar" data-id="${producto.id}">Editar</button>
                     <button class="btn-imagenes" data-id="${producto.id}">🖼 Gestionar imágenes</button>
-                    <button class="btn-eliminar" data-id="${producto.id}" disabled title="Eliminar no disponible por el momento">Eliminar</button>
+                    <button class="btn-ocultar${estaOculto ? ' activo' : ''}" data-id="${producto.id}" data-visible-actual="${!estaOculto}">
+                        ${estaOculto ? '👁 Mostrar' : '🚫 Ocultar'}
+                    </button>
                 </div>
             </div>
         `;
@@ -139,6 +147,10 @@ function renderCatalogo() {
 
     document.querySelectorAll(".btn-editar").forEach(btn => {
         btn.addEventListener("click", () => cargarEnFormulario(btn.dataset.id));
+    });
+
+    document.querySelectorAll(".btn-ocultar").forEach(btn => {
+        btn.addEventListener("click", () => toggleVisibilidadProducto(btn));
     });
 
     document.querySelectorAll(".btn-imagenes").forEach(btn => {
@@ -278,7 +290,7 @@ async function cargarImagenesDelModal() {
         const respuesta = await fetch(`${API_PRODUCTOS}/${productoImagenesId}/imagenes`);
         if (!respuesta.ok) throw new Error("No se pudieron obtener las imágenes");
         const imagenes = await respuesta.json();
-        
+
         cantidadImagenesModal = imagenes.length;
         actualizarZonaAgregar();
 
@@ -356,7 +368,7 @@ async function agregarImagenes() {
         alert("Elegí al menos una imagen para agregar.");
         return;
     }
-    
+
     const disponibles = MAX_IMAGENES_POR_PRODUCTO - cantidadImagenesModal;
     if (inputAgregarImagenes.files.length > disponibles) {
         alert(`Este producto ya tiene ${cantidadImagenesModal} de ${MAX_IMAGENES_POR_PRODUCTO} imágenes permitidas. Podés agregar hasta ${disponibles} más.`);
