@@ -1,7 +1,7 @@
 const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const BASE_URL = isLocal
     ? "http://localhost:3000"
-    : "https://la24shop.vercel.app";
+    : "https://express-js-on-vercel-self-omega-30.vercel.app";
 
 const API_PRODUCTOS = `${BASE_URL}/api/productos`;
 const API_CATEGORIAS = `${BASE_URL}/api/categorias`;
