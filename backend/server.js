@@ -310,8 +310,8 @@ app.put('/api/imagenes/:idImagen', upload.single('imagen'), async (req, res) => 
 // Eliminar UNA imagen puntual por su propio id
 app.delete('/api/imagenes/:idImagen', async (req, res) => {
     const { idImagen } = req.params;
-    try {
-        const eliminado = await pool.query(
+        try {
+            const eliminado = await pool.query(
             'DELETE FROM imagenes_producto WHERE id = $1 RETURNING id',
             [idImagen]
         );
@@ -357,6 +357,77 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// ==========================================================
+// RUTA — Registro de clientes (hash automático con bcrypt)
+// ==========================================================
+app.post('/api/registro-cliente', async (req, res) => {
+    const { usuario, contrasena, nombre, apellido, mail } = req.body;
+
+    // Validación básica de campos obligatorios
+    if (!usuario || !contrasena || !nombre || !apellido || !mail) {
+        return res.status(400).json({ exito: false, mensaje: 'Completá todos los campos obligatorios.' });
+    }
+
+    try {
+        // Verificar que no exista ya un cliente con ese mail o usuario
+        const existente = await pool.query(
+            'SELECT id_cliente FROM "clientes" WHERE mail = $1 OR nombreusuario = $2',
+            [mail, usuario]
+        );
+
+        if (existente.rows.length > 0) {
+            return res.status(409).json({ exito: false, mensaje: 'Ya existe una cuenta con ese mail o usuario.' });
+        }
+
+        // Hashear la contraseña automáticamente — esto reemplaza a generarhash.js para clientes
+        const hash = await bcrypt.hash(contrasena, 10);
+
+        const nuevoCliente = await pool.query(
+            `INSERT INTO "clientes" (usuario, contraseña, nombre, apellido, mail)
+             VALUES ($1, $2, $3, $4, $5) RETURNING id_cliente`,
+            [usuario, hash, nombre, apellido, mail]
+        );
+
+        res.status(201).json({
+            exito: true,
+            mensaje: 'Cuenta creada correctamente',
+            id: nuevoCliente.rows[0].id_cliente
+        });
+    } catch (error) {
+        console.error('Error al registrar cliente:', error);
+        res.status(500).json({ exito: false, mensaje: 'Error interno al crear la cuenta.' });
+    }
+});
+
+// ==========================================================
+// RUTA — Login de clientes (mismo patrón que /api/login)LOSPIBESLOSPIBES
+// ==========================================================
+app.post('/api/login-cliente', async (req, res) => {
+    const { usuario, contrasena } = req.body;
+
+    try {
+        const resultado = await pool.query(
+            'SELECT * FROM "clientes" WHERE usuario = $1 OR mail = $1',
+            [usuario]
+        );
+
+        if (resultado.rows.length === 0) {
+            return res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
+        }
+
+        const cliente = resultado.rows[0];
+        const coincide = await bcrypt.compare(contrasena, cliente.contraseñahash);
+
+        if (coincide) {
+            res.json({ exito: true, mensaje: "Acceso autorizado" });
+        } else {
+            res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+    }
+});
 // 5. INICIALIZAR EL SERVIDOR
 // Solo levanta el servidor con app.listen cuando corrés este archivo
 // directamente (ej: "node server.js" en tu compu). Cuando Vercel lo
