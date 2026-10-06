@@ -1,0 +1,132 @@
+/* =========================================================
+   ET24 SHOP — REGISTRO DE CLIENTES
+   Mismo lenguaje visual que el resto del sitio (navy / dorado
+   / crema, tipografía Baloo 2 + Inter). Solo las clases que
+   usa este formulario — nada de paneles, tabs ni pedidos.
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-display: 'Baloo 2', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    --navy-950: #0a1230;
+    --blue-300: #8fc0ec;
+    --page-bg: #f7f2e6;
+    --gold-500: #f0b93d;
+    --gold-600: #d99e1d;
+    --ink: #10192f;
+    --white: #ffffff;
+    --red: #c0392b;
+    --border-color: #ecdfc4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--page-bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+/* ---------- Tarjeta del formulario ---------- */
+.dark-form {
+    width: 100%;
+    max-width: 560px;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 28px rgba(10,18,48,0.1);
+    border-radius: 22px;
+    padding: 36px 34px;
+}
+
+/* ---------- Grilla de campos ---------- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.col-span-2 { grid-column: span 2; }
+
+.form-group label {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--gold-600);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+}
+
+.form-group input {
+    width: 100%;
+    background-color: var(--page-bg);
+    border: 1.5px solid var(--blue-300);
+    color: var(--ink);
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+}
+
+.form-group input::placeholder { color: #9aa8bd; }
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 3px rgba(240,185,61,0.25);
+}
+
+/* ---------- Mensaje de error ---------- */
+#error {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--red) !important;
+    margin: 18px 0 0;
+    padding: 10px 14px;
+    background-color: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.25);
+    border-radius: 12px;
+}
+
+/* ---------- Botón ---------- */
+.form-footer {
+    margin-top: 26px;
+}
+
+.btn-gold {
+    width: 100%;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    background-color: var(--gold-500);
+    color: var(--navy-950);
+    border: none;
+    padding: 14px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.18s ease;
+}
+
+.btn-gold:hover { background-color: var(--gold-600); transform: translateY(-1px); }
+.btn-gold:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 560px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .col-span-2 { grid-column: span 1; }
+
+    .dark-form {
+        padding: 28px 22px;
+    }
+}
