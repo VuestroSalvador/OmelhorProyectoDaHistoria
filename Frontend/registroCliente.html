@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../estilo/registroclientes.css">
+    <title>Registro de Clientes</title>
+</head>
+<body>
+    <form id="form-registro" class="dark-form">
+        <div class="form-grid">
+            <div class="form-group col-span-2">
+                <label>NOMBRE *</label>
+                <input type="text" id="nombre" placeholder="Ej: Salvador" required>
+            </div>
+
+            <div class="form-group col-span-2">
+                <label>APELLIDO *</label>
+                <input type="text" id="apellido" placeholder="Ej: García" required>
+            </div>
+
+            <div class="form-group">
+                <label>Usuario *</label>
+                <input type="text" id="usuario" placeholder="Ej: VuestroSalvador" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mail *</label>
+                <input type="email" id="mail" placeholder="Ej: salvador.garcia@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña *</label>
+                <input type="password" id="contraseña" placeholder="Ej: ********" required>
+            </div>
+        </div>
+
+        <p id="error" style="color:red; display:none;"></p>
+
+        <div class="form-footer">
+            <button type="submit" class="btn-gold" id="btn-submit">+ Crear Cuenta</button>
+        </div>
+    </form>
+
+    <script src="../javascripts/Registrocliente.js"></script>
+</body>
+</html>
