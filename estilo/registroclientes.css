@@ -1,8 +1,7 @@
 /* =========================================================
    ET24 SHOP — REGISTRO DE CLIENTES
-   Mismo lenguaje visual que el resto del sitio (navy / dorado
-   / crema, tipografía Baloo 2 + Inter). Solo las clases que
-   usa este formulario — nada de paneles, tabs ni pedidos.
+   Estética unificada con Login: Topbar, fondo navy/fotografía,
+   tarjeta translúcida estilo vidrio y cinta diagonal ET24.
    ========================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -11,122 +10,360 @@
     --font-body: 'Inter', sans-serif;
 
     --navy-950: #0a1230;
+    --navy-800: #142a52;
+    --blue-500: #4a8fd6;
     --blue-300: #8fc0ec;
+    --blue-100: #dcebfa;
     --page-bg: #f7f2e6;
     --gold-500: #f0b93d;
     --gold-600: #d99e1d;
     --ink: #10192f;
     --white: #ffffff;
     --red: #c0392b;
+    --text-muted: #6b7690;
     --border-color: #ecdfc4;
 }
 
-* { box-sizing: border-box; }
+* { 
+    box-sizing: border-box; 
+}
+
+html, body {
+    min-height: 100vh;
+}
 
 body {
-    margin: 0;
-    min-height: 100vh;
-    background-color: var(--page-bg);
     color: var(--ink);
     font-family: var(--font-body);
+    margin: 0;
+    position: relative;
+    overflow-x: hidden;
+
+    /* Fondo oscuro con degradé e imagen institucional */
+    background:
+        linear-gradient(180deg, rgba(10,18,48,0.88) 0%, rgba(10,18,48,0.80) 45%, rgba(10,18,48,0.95) 100%),
+        url('../imagenes/et24.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+/* Manchas de luz difuminadas */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.28;
+    z-index: 0;
+    pointer-events: none;
+}
+
+body::before {
+    width: 420px;
+    height: 420px;
+    background: var(--gold-500);
+    top: -140px;
+    left: -120px;
+}
+
+body::after {
+    width: 460px;
+    height: 460px;
+    background: var(--blue-500);
+    bottom: -160px;
+    right: -140px;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
+    justify-content: space-between;
+    gap: 20px;
+    height: 72px;
+    padding: 0 28px;
+    background-color: rgba(10,18,48,0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(10,18,48,0.35);
 }
 
-/* ---------- Tarjeta del formulario ---------- */
-.dark-form {
-    width: 100%;
-    max-width: 560px;
+/* Tira de rombos caracterísitca de ET24 */
+.topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 10px;
+    background:
+        linear-gradient(45deg, var(--blue-500) 25%, transparent 25%) 0 0,
+        linear-gradient(-45deg, var(--blue-500) 25%, transparent 25%) 0 0,
+        linear-gradient(45deg, transparent 75%, var(--blue-500) 75%) 0 0,
+        linear-gradient(-45deg, transparent 75%, var(--blue-500) 75%) 0 0;
+    background-color: var(--blue-100);
+    background-size: 10px 10px;
+    opacity: 0.9;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--white);
+    white-space: nowrap;
+}
+
+.topbar-brand strong { color: var(--gold-500); }
+
+.topbar-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
     background-color: var(--white);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 10px 28px rgba(10,18,48,0.1);
-    border-radius: 22px;
-    padding: 36px 34px;
+    border: 2px solid var(--gold-500);
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+    transition: transform 0.2s ease;
 }
 
-/* ---------- Grilla de campos ---------- */
+.topbar-brand:hover .topbar-logo { transform: rotate(-6deg) scale(1.05); }
+
+.topbar-inicio {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--navy-950);
+    background-color: var(--gold-500);
+    padding: 10px 20px;
+    border-radius: 30px;
+    text-decoration: none;
+    box-shadow: 0 6px 16px rgba(240,185,61,0.35);
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+
+.topbar-inicio:hover {
+    background-color: var(--gold-600);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(240,185,61,0.45);
+}
+
+/* ---------- Tarjeta de Registro ---------- */
+.login-box {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    margin: 60px auto 80px;
+    background-color: rgba(255,255,255,0.96);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.35), 0 4px 14px rgba(0,0,0,0.15);
+    border-radius: 26px;
+    padding: 44px 36px;
+    text-align: center;
+    z-index: 1;
+    overflow: hidden;
+    animation: login-box-in 0.55s ease both;
+}
+
+@keyframes login-box-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Franja superior tricolor */
+.login-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: linear-gradient(90deg, var(--navy-950) 0%, var(--blue-500) 50%, var(--gold-500) 100%);
+}
+
+/* Sello decorativo ET24 en la esquina */
+.login-box::after {
+    content: "ET24";
+    position: absolute;
+    top: 18px;
+    right: -34px;
+    width: 130px;
+    background-color: var(--gold-500);
+    color: var(--navy-950);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    padding: 5px 0;
+    transform: rotate(38deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.login-box h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--navy-950);
+    margin: 0 0 6px;
+}
+
+.login-box p {
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin: 0 0 24px;
+}
+
+/* ---------- Formulario y Grilla ---------- */
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 14px;
 }
 
-.col-span-2 { grid-column: span 2; }
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+}
 
 .form-group label {
-    display: block;
     font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.82rem;
-    color: var(--gold-600);
-    margin-bottom: 8px;
-    letter-spacing: 0.3px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--navy-950);
+    margin-bottom: 5px;
+    letter-spacing: 0.03em;
 }
 
-.form-group input {
-    width: 100%;
+.formulario input {
+    font-family: var(--font-body);
     background-color: var(--page-bg);
     border: 1.5px solid var(--blue-300);
     color: var(--ink);
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 14px;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.form-group input::placeholder { color: #9aa8bd; }
+.formulario input::placeholder { color: #9aa8bd; }
 
-.form-group input:focus {
+.formulario input:focus {
     outline: none;
     border-color: var(--gold-500);
-    box-shadow: 0 0 0 3px rgba(240,185,61,0.25);
+    background-color: var(--white);
+    box-shadow: 0 0 0 4px rgba(240,185,61,0.22);
 }
 
-/* ---------- Mensaje de error ---------- */
+/* ---------- Botón de Envío ---------- */
+.btn-submit {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-600) 100%);
+    color: var(--navy-950);
+    border: none;
+    padding: 14px;
+    border-radius: 30px;
+    font-size: 0.98rem;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: 0 10px 22px rgba(240,185,61,0.35);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.2s ease;
+    width: 100%;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(240,185,61,0.45);
+}
+
+.btn-submit:active { 
+    transform: translateY(0); 
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Mensaje de Error */
 #error {
     font-family: var(--font-body);
     font-size: 0.85rem;
     color: var(--red) !important;
-    margin: 18px 0 0;
+    text-align: left;
+    margin: 4px 0 0;
     padding: 10px 14px;
     background-color: rgba(192,57,43,0.08);
     border: 1px solid rgba(192,57,43,0.25);
     border-radius: 12px;
 }
 
-/* ---------- Botón ---------- */
-.form-footer {
-    margin-top: 26px;
+/* Enlace inferior */
+.login-alt {
+    margin-top: 22px !important;
+    margin-bottom: 0 !important;
+    font-size: 0.88rem !important;
+    color: var(--text-muted);
 }
 
-.btn-gold {
-    width: 100%;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1rem;
-    background-color: var(--gold-500);
+.login-alt a {
     color: var(--navy-950);
-    border: none;
-    padding: 14px 30px;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.18s ease;
+    font-weight: 700;
+    text-decoration: underline;
+    transition: color 0.2s ease;
 }
 
-.btn-gold:hover { background-color: var(--gold-600); transform: translateY(-1px); }
-.btn-gold:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+.login-alt a:hover {
+    color: var(--gold-600);
+}
 
 /* ---------- Responsive ---------- */
-@media (max-width: 560px) {
+@media (max-width: 540px) {
+    .login-box {
+        margin: 40px 16px;
+        padding: 36px 22px;
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
 
-    .col-span-2 { grid-column: span 1; }
+    .form-group.full-width {
+        grid-column: span 1;
+    }
 
-    .dark-form {
-        padding: 28px 22px;
+    .login-box::after {
+        top: 14px;
+        right: -38px;
+        width: 120px;
+        font-size: 0.66rem;
     }
 }
