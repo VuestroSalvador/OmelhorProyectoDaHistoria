@@ -1,4 +1,6 @@
-const BASE_URL = window.location.hostname === "localhost"
+const esLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+const BASE_URL = esLocal
     ? "http://localhost:3000"
     : "https://express-js-on-vercel-self-omega-30.vercel.app";
 
@@ -30,7 +32,7 @@ form.addEventListener("submit", async (e) => {
 
         if (resultado.exito) {
             // Cuenta creada — lo mandamos a loguearse con sus datos nuevos
-            window.location.href = "loginCliente.html";
+            window.location.href = "../Frontend/loginclientes.html";
         } else {
             errorMsg.textContent = `❌ ${resultado.mensaje}`;
             errorMsg.style.display = "block";

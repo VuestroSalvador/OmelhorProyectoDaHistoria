@@ -399,17 +399,15 @@ app.post('/api/login', async (req, res) => {
 // RUTA — Registro de clientes (hash automático con bcrypt)
 // ==========================================================
 app.post('/api/registro-cliente', async (req, res) => {
-    const { usuario, contrasena, nombre, apellido, mail } = req.body;
+    const { nombre, apellido, usuario, mail, contrasena } = req.body;
 
-    // Validación básica de campos obligatorios
-    if (!usuario || !contrasena || !nombre || !apellido || !mail) {
+    if (!nombre || !apellido || !usuario || !mail || !contrasena) {
         return res.status(400).json({ exito: false, mensaje: 'Completá todos los campos obligatorios.' });
     }
 
     try {
-        // Verificar que no exista ya un cliente con ese mail o usuario
         const existente = await pool.query(
-            'SELECT id_cliente FROM "clientes" WHERE mail = $1 OR nombreusuario = $2',
+            'SELECT id FROM clientes WHERE mail = $1 OR usuario = $2',
             [mail, usuario]
         );
 
@@ -417,19 +415,18 @@ app.post('/api/registro-cliente', async (req, res) => {
             return res.status(409).json({ exito: false, mensaje: 'Ya existe una cuenta con ese mail o usuario.' });
         }
 
-        // Hashear la contraseña automáticamente — esto reemplaza a generarhash.js para clientes
         const hash = await bcrypt.hash(contrasena, 10);
 
         const nuevoCliente = await pool.query(
-            `INSERT INTO "clientes" (usuario, contraseña, nombre, apellido, mail)
-             VALUES ($1, $2, $3, $4, $5) RETURNING id_cliente`,
-            [usuario, hash, nombre, apellido, mail]
+            `INSERT INTO clientes (nombre, apellido, usuario, mail, contraseña)
+             VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+            [nombre, apellido, usuario, mail, hash]
         );
 
         res.status(201).json({
             exito: true,
             mensaje: 'Cuenta creada correctamente',
-            id: nuevoCliente.rows[0].id_cliente
+            id: nuevoCliente.rows[0].id
         });
     } catch (error) {
         console.error('Error al registrar cliente:', error);
@@ -438,14 +435,14 @@ app.post('/api/registro-cliente', async (req, res) => {
 });
 
 // ==========================================================
-// RUTA — Login de clientes (mismo patrón que /api/login)LOSPIBESLOSPIBES
+// RUTA — Login de clientes
 // ==========================================================
 app.post('/api/login-cliente', async (req, res) => {
     const { usuario, contrasena } = req.body;
 
     try {
         const resultado = await pool.query(
-            'SELECT * FROM "clientes" WHERE usuario = $1 OR mail = $1',
+            'SELECT * FROM clientes WHERE usuario = $1 OR mail = $1',
             [usuario]
         );
 
@@ -454,7 +451,7 @@ app.post('/api/login-cliente', async (req, res) => {
         }
 
         const cliente = resultado.rows[0];
-        const coincide = await bcrypt.compare(contrasena, cliente.contraseñahash);
+        const coincide = await bcrypt.compare(contrasena, cliente["contraseña"]);
 
         if (coincide) {
             res.json({ exito: true, mensaje: "Acceso autorizado" });

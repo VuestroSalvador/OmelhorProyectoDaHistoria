@@ -1,7 +1,8 @@
-const BASE_URL = window.location.hostname === "localhost"
-    ? "http://localhost:3000"
-    : "https://la24shop.vercel.app";
+const esLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 
+const BASE_URL = esLocal
+    ? "http://localhost:3000"
+     : "https://express-js-on-vercel-self-omega-30.vercel.app";
 async function loginCliente() {
     let usuario = document.getElementById("usuario").value.trim();
     let contrasena = document.getElementById("contrasena").value.trim();
@@ -20,7 +21,7 @@ async function loginCliente() {
 
         if (resultado.exito) {
             localStorage.setItem("clienteLogueado", usuario);
-            window.location.href = "compra.html";
+            window.location.href = "../Frontend/merch.html";
         } else {
             document.getElementById("error").style.display = "block";
         }

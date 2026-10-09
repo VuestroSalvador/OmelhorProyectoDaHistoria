@@ -1,46 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Clientes — ET24 SHOP</title>
     <link rel="stylesheet" href="../estilo/registroclientes.css">
-    <title>Registro de Clientes</title>
 </head>
 <body>
-    <form id="form-registro" class="dark-form">
-        <div class="form-grid">
-            <div class="form-group col-span-2">
-                <label>NOMBRE *</label>
-                <input type="text" id="nombre" placeholder="Ej: Salvador" required>
+
+    <!-- TOPBAR INSTITUCIONAL -->
+    <header class="topbar">
+        <a href="homeET24.html" class="topbar-brand">
+            <img src="https://res.cloudinary.com/lnjdanbc/image/upload/v1787790201/img.tecN_24.png" alt="Escudo ET24" class="topbar-logo">
+            <span>ET24 <strong>SHOP</strong></span>
+        </a>
+        <a href="merch.html" class="topbar-inicio">← Volver a la tienda</a>
+    </header>
+
+    <!-- TARJETA FLOTANTE CON ESTILO DE LA IMAGEN -->
+    <div class="login-box registro-box">
+        <h1>Crear Cuenta</h1>
+        <p>Completá tus datos para registrarte en la tienda</p>
+
+        <form id="form-registro" class="formulario">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nombre">NOMBRE *</label>
+                    <input type="text" id="nombre" placeholder="Ej: Salvador" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="apellido">APELLIDO *</label>
+                    <input type="text" id="apellido" placeholder="Ej: García" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="usuario">USUARIO *</label>
+                    <input type="text" id="usuario" placeholder="Ej: VuestroSalvador" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mail">MAIL *</label>
+                    <input type="email" id="mail" placeholder="Ej: salvador.garcia@example.com" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="contrasena">CONTRASEÑA *</label>
+                    <input type="password" id="contrasena" placeholder="Ej: ********" required>
+                </div>
             </div>
 
-            <div class="form-group col-span-2">
-                <label>APELLIDO *</label>
-                <input type="text" id="apellido" placeholder="Ej: García" required>
-            </div>
+            <p id="error" style="color:red; display:none;"></p>
 
-            <div class="form-group">
-                <label>Usuario *</label>
-                <input type="text" id="usuario" placeholder="Ej: VuestroSalvador" required>
-            </div>
+            <button type="submit" id="btn-submit" class="btn-submit">+ Crear Cuenta</button>
+        </form>
 
-            <div class="form-group">
-                <label>Mail *</label>
-                <input type="email" id="mail" placeholder="Ej: salvador.garcia@example.com" required>
-            </div>
-
-            <div class="form-group">
-                <label>Contraseña *</label>
-                <input type="password" id="contraseña" placeholder="Ej: ********" required>
-            </div>
-        </div>
-
-        <p id="error" style="color:red; display:none;"></p>
-
-        <div class="form-footer">
-            <button type="submit" class="btn-gold" id="btn-submit">+ Crear Cuenta</button>
-        </div>
-    </form>
+        <p class="login-alt">¿Ya tenés cuenta? <a href="loginclientes.html">Iniciá sesión acá</a></p>
+    </div>
 
     <script src="../javascripts/Registrocliente.js"></script>
 </body>
