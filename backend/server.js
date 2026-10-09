@@ -54,19 +54,18 @@ const upload = multer({ storage: storage });
 // El panel de admin pide ?todos=true para ver también los que están ocultos.
 app.get('/api/productos', async (req, res) => {
     try {
-        const { todos } = req.query;
+        const verTodos = req.query.todos === 'true';
 
-        // Si "todos" es verdadero, traemos todo; de lo contrario solo los visibles
-        let query = `
+        const resultado = await pool.query(`
             SELECT 
                 p."ID_producto" AS id,
                 p."Nombre" AS nombre,
                 p."Precio" AS precio,
                 p."Descripcion" AS descripcion,
                 p."Stock" AS stock,
-                p."Visible",
                 p."ID_categoria" AS id_categoria,
                 c."categoria" AS categoria,
+                p."Visible" AS visible,
                 COALESCE(img.url_imagen, p."Imagen") AS url_imagen
             FROM "Producto" p
             LEFT JOIN "Categoria" c ON p."ID_categoria" = c."ID_categoria"
@@ -75,21 +74,17 @@ app.get('/api/productos', async (req, res) => {
                 FROM imagenes_producto 
                 ORDER BY "ID_producto", orden ASC
             ) img ON p."ID_producto" = img."ID_producto"
-        `;
-
-        if (todos !== 'true') {
-            query += ` WHERE p."Visible" = true `;
-        }
-
-        query += ` ORDER BY p."ID_producto" DESC;`;
-
-        const resultado = await pool.query(query);
+            ${verTodos ? '' : 'WHERE p."Visible" = true'}
+            ORDER BY p."ID_producto" DESC
+        `);
+        
         res.json(resultado.rows);
     } catch (error) {
         console.error('Error al consultar Neon:', error);
         res.status(500).json({ error: 'Error al obtener productos' });
     }
 });
+
 // Mostrar/ocultar un producto puntual (no lo borra, solo cambia su visibilidad)
 app.put('/api/productos/:id/visibilidad', async (req, res) => {
     const { id } = req.params;
@@ -348,8 +343,8 @@ app.put('/api/imagenes/:idImagen', upload.single('imagen'), async (req, res) => 
 // Eliminar UNA imagen puntual por su propio id
 app.delete('/api/imagenes/:idImagen', async (req, res) => {
     const { idImagen } = req.params;
-        try {
-            const eliminado = await pool.query(
+    try {
+        const eliminado = await pool.query(
             'DELETE FROM imagenes_producto WHERE id = $1 RETURNING id',
             [idImagen]
         );
@@ -395,74 +390,6 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// ==========================================================
-// RUTA — Registro de clientes (hash automático con bcrypt)
-// ==========================================================
-app.post('/api/registro-cliente', async (req, res) => {
-    const { nombre, apellido, usuario, mail, contrasena } = req.body;
-
-    if (!nombre || !apellido || !usuario || !mail || !contrasena) {
-        return res.status(400).json({ exito: false, mensaje: 'Completá todos los campos obligatorios.' });
-    }
-
-    try {
-        const existente = await pool.query(
-            'SELECT id FROM clientes WHERE mail = $1 OR usuario = $2',
-            [mail, usuario]
-        );
-
-        if (existente.rows.length > 0) {
-            return res.status(409).json({ exito: false, mensaje: 'Ya existe una cuenta con ese mail o usuario.' });
-        }
-
-        const hash = await bcrypt.hash(contrasena, 10);
-
-        const nuevoCliente = await pool.query(
-            `INSERT INTO clientes (nombre, apellido, usuario, mail, contraseña)
-             VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-            [nombre, apellido, usuario, mail, hash]
-        );
-
-        res.status(201).json({
-            exito: true,
-            mensaje: 'Cuenta creada correctamente',
-            id: nuevoCliente.rows[0].id
-        });
-    } catch (error) {
-        console.error('Error al registrar cliente:', error);
-        res.status(500).json({ exito: false, mensaje: 'Error interno al crear la cuenta.' });
-    }
-});
-
-// ==========================================================
-// RUTA — Login de clientes
-// ==========================================================
-app.post('/api/login-cliente', async (req, res) => {
-    const { usuario, contrasena } = req.body;
-
-    try {
-        const resultado = await pool.query(
-            'SELECT * FROM clientes WHERE usuario = $1 OR mail = $1',
-            [usuario]
-        );
-
-        if (resultado.rows.length === 0) {
-            return res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
-        }
-
-        const cliente = resultado.rows[0];
-        const coincide = await bcrypt.compare(contrasena, cliente["contraseña"]);
-
-        if (coincide) {
-            res.json({ exito: true, mensaje: "Acceso autorizado" });
-        } else {
-            res.status(401).json({ exito: false, mensaje: "Credenciales inválidas" });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
-    }
-});
 // 5. INICIALIZAR EL SERVIDOR
 // Solo levanta el servidor con app.listen cuando corrés este archivo
 // directamente (ej: "node server.js" en tu compu). Cuando Vercel lo

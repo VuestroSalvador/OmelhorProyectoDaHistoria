@@ -419,6 +419,43 @@ async function eliminarImagen(idImagen) {
     }
 }
 
+// ==========================================================
+// . MOSTRAR / OCULTAR UN PRODUCTO (no lo borra de la base)
+// Guarda visible = false (oculto) o true (visible) en la columna "Visible"
+// del producto, y recarga el catálogo para que el botón cambie de estado.
+// ==========================================================
+async function toggleVisibilidadProducto(btn) {
+    const id = btn.dataset.id;
+    const visibleActual = btn.dataset.visibleActual === "true";
+    const nuevoValorVisible = !visibleActual; // si estaba visible -> pasa a false (oculto)
+
+    btn.disabled = true;
+
+    try {
+        const respuesta = await fetch(`${API_PRODUCTOS}/${id}/visibilidad`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ visible: nuevoValorVisible })
+        });
+
+        if (!respuesta.ok) {
+            let detalle = "error desconocido";
+            try { detalle = (await respuesta.json()).error || detalle; } catch (e) {}
+            alert(`No se pudo actualizar: ${detalle}`);
+            btn.disabled = false;
+            return;
+        }
+
+        // Recargamos el catálogo para que la tarjeta, el badge "OCULTO" y el
+        // color del botón queden consistentes con lo que quedó guardado.
+        await cargarProductos();
+    } catch (error) {
+        console.error(error);
+        alert("No se pudo actualizar la visibilidad del producto.");
+        btn.disabled = false;
+    }
+}
+
 // Muestra/oculta la zona de "+ Añadir imagen" según cuántas tiene ya el producto
 function actualizarZonaAgregar() {
     if (!modalAgregarZona) return;
