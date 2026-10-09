@@ -79,6 +79,150 @@ async function cargarCategorias() {
         console.error(error);
     }
 }
+const formCategoria = document.getElementById("form-categoria");
+const selectGestionCategoria = document.getElementById("select-gestion-categoria");
+const inputNombreCategoria = document.getElementById("nombre-categoria");
+const btnSubmitCategoria = document.getElementById("btn-submit-categoria");
+const btnEliminarCategoria = document.getElementById("btn-eliminar-categoria");
+let listaCategorias = [];
+
+// ---------- Cargar categorías en ambos selectores ----------
+async function cargarCategorias() {
+    try {
+        const respuesta = await fetch(API_CATEGORIAS);
+        if (!respuesta.ok) throw new Error("Error al obtener categorías");
+        listaCategorias = await respuesta.json();
+
+        // 1. Limpiar y llenar el selector del formulario de productos
+        selectCategoria.innerHTML = '<option value="" disabled selected>Seleccionar categoría</option>';
+        // 2. Limpiar y llenar el selector del formulario de gestión de categorías
+        selectGestionCategoria.innerHTML = '';
+
+        listaCategorias.forEach((cat) => {
+            // Opción para el formulario de producto
+            const optionProd = document.createElement("option");
+            optionProd.value = cat.id;
+            optionProd.textContent = cat.nombre;
+            selectCategoria.appendChild(optionProd);
+
+            // Opción para el selector de gestión de categoría
+            const optionGest = document.createElement("option");
+            optionGest.value = cat.id;
+            optionGest.textContent = cat.nombre;
+            selectGestionCategoria.appendChild(optionGest);
+        });
+
+        // Opción final para agregar una nueva categoría
+        const optionNueva = document.createElement("option");
+        optionNueva.value = "NUEVA";
+        optionNueva.textContent = "+ Agregar categoría";
+        selectGestionCategoria.appendChild(optionNueva);
+
+        // Resetear el estado del formulario de gestión
+        selectGestionCategoria.value = "NUEVA";
+        resetearFormCategoria();
+
+    } catch (error) {
+        console.error("Error al cargar categorías:", error);
+    }
+}
+
+// Al cambiar la opción en el selector de gestión de categoría
+if (selectGestionCategoria) {
+    selectGestionCategoria.addEventListener("change", () => {
+        const valor = selectGestionCategoria.value;
+        if (valor === "NUEVA") {
+            resetearFormCategoria();
+        } else {
+            const catSeleccionada = listaCategorias.find(c => String(c.id) === String(valor));
+            if (catSeleccionada) {
+                inputNombreCategoria.value = catSeleccionada.nombre;
+                btnSubmitCategoria.textContent = "Guardar Cambios";
+                btnEliminarCategoria.style.display = "inline-block";
+            }
+        }
+    });
+}
+
+function resetearFormCategoria() {
+    inputNombreCategoria.value = "";
+    btnSubmitCategoria.textContent = "+ CREAR CATEGORÍA";
+    btnEliminarCategoria.style.display = "none";
+}
+
+// ---------- Crear / Editar Categoría ----------
+if (formCategoria) {
+    formCategoria.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const nombreCat = inputNombreCategoria.value.trim();
+        const modo = selectGestionCategoria.value;
+
+        if (!nombreCat) return;
+
+        try {
+            let respuesta;
+            if (modo === "NUEVA") {
+                // Crear
+                respuesta = await fetch(API_CATEGORIAS, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nombre: nombreCat })
+                });
+            } else {
+                // Editar
+                respuesta = await fetch(`${API_CATEGORIAS}/${modo}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nombre: nombreCat })
+                });
+            }
+
+            const data = await respuesta.json();
+            if (!respuesta.ok) {
+                alert(`Error: ${data.error || "No se pudo procesar la categoría"}`);
+                return;
+            }
+
+            alert(data.mensaje || "Categoría guardada exitosamente");
+            await cargarCategorias();
+            await cargarProductos(); // Recarga catálogo para actualizar nombres de categorías
+
+        } catch (error) {
+            console.error(error);
+            alert("Ocurrió un error al guardar la categoría.");
+        }
+    });
+}
+
+// ---------- Eliminar Categoría ----------
+if (btnEliminarCategoria) {
+    btnEliminarCategoria.addEventListener("click", async () => {
+        const idCat = selectGestionCategoria.value;
+        if (idCat === "NUEVA") return;
+
+        if (!confirm("¿Seguro que querés eliminar esta categoría?")) return;
+
+        try {
+            const respuesta = await fetch(`${API_CATEGORIAS}/${idCat}`, {
+                method: "DELETE"
+            });
+            const data = await respuesta.json();
+
+            if (!respuesta.ok) {
+                alert(`No se pudo eliminar: ${data.error}`);
+                return;
+            }
+
+            alert("Categoría eliminada correctamente");
+            await cargarCategorias();
+            await cargarProductos();
+
+        } catch (error) {
+            console.error(error);
+            alert("Error al intentar eliminar la categoría.");
+        }
+    });
+}
 
 // ---------- Traer productos desde el backend ----------
 async function cargarProductos() {
@@ -261,7 +405,7 @@ const modalVacio = document.getElementById("modal-imagenes-vacio");
 const modalTitulo = document.getElementById("modal-imagenes-titulo");
 let inputAgregarImagenes = document.getElementById("input-agregar-imagenes");
 const modalAgregarZona = document.getElementById("modal-agregar-zona");
-const MAX_IMAGENES_POR_PRODUCTO = 4;
+const MAX_IMAGENES_POR_PRODUCTO = 6;
 let cantidadImagenesModal = 0;
 
 async function abrirModalImagenes(idProducto) {

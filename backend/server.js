@@ -113,7 +113,7 @@ app.put('/api/productos/:id/visibilidad', async (req, res) => {
 });
 
 // Crear un producto nuevo
-app.post('/api/productos', upload.array('imagenes', 4), async (req, res) => {
+app.post('/api/productos', upload.array('imagenes', 6), async (req, res) => {
     try {
         const { nombre, precio, descripcion, stock, id_categoria } = req.body;
 
@@ -145,7 +145,7 @@ app.post('/api/productos', upload.array('imagenes', 4), async (req, res) => {
 });
 
 // Editar un producto existente
-app.put('/api/productos/:id', upload.array('imagenes', 4), async (req, res) => {
+app.put('/api/productos/:id', upload.array('imagenes', 6), async (req, res) => {
     const { id } = req.params;
     const { nombre, precio, descripcion, stock, id_categoria } = req.body;
 
@@ -268,7 +268,7 @@ app.get('/api/productos/:id/imagenes', async (req, res) => {
 
 // Agregar una o más imágenes NUEVAS a un producto, SIN borrar las existentes
 // Tope: 4 imágenes por producto en total (existentes + nuevas)
-app.post('/api/productos/:id/imagenes', upload.array('imagenes', 4), async (req, res) => {
+app.post('/api/productos/:id/imagenes', upload.array('imagenes', 6), async (req, res) => {
     const { id } = req.params;
     try {
         if (!req.files || req.files.length === 0) {
@@ -282,8 +282,8 @@ app.post('/api/productos/:id/imagenes', upload.array('imagenes', 4), async (req,
         );
         const totalActual = conteoResultado.rows[0].total;
 
-        if (totalActual + req.files.length > 4) {
-            const disponibles = Math.max(0, 4 - totalActual);
+        if (totalActual + req.files.length > 6) {
+            const disponibles = Math.max(0, 6 - totalActual);
             return res.status(400).json({
                 error: `Este producto ya tiene ${totalActual} imagen(es). Solo podés agregar ${disponibles} más (máximo 4 en total).`
             });
@@ -390,6 +390,76 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// Crear una nueva categoría
+app.post('/api/categorias', async (req, res) => {
+    const { nombre } = req.body;
+    if (!nombre || !nombre.trim()) {
+        return res.status(400).json({ error: 'El nombre de la categoría es obligatorio.' });
+    }
+    try {
+        const [nuevaCat] = await sql`
+            INSERT INTO "Categoria" ("categoria")
+            VALUES (${nombre.trim()})
+            RETURNING "ID_categoria" AS id, "categoria" AS nombre
+        `;
+        res.status(201).json({ mensaje: 'Categoría creada exitosamente', categoria: nuevaCat });
+    } catch (error) {
+        console.error('Error al crear categoría:', error);
+        res.status(500).json({ error: 'Error al crear la categoría: ' + error.message });
+    }
+});
+
+// Modificar una categoría existente
+app.put('/api/categorias/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nombre } = req.body;
+    if (!nombre || !nombre.trim()) {
+        return res.status(400).json({ error: 'El nombre de la categoría es obligatorio.' });
+    }
+    try {
+        const resultado = await pool.query(
+            `UPDATE "Categoria" SET "categoria" = $1 WHERE "ID_categoria" = $2 RETURNING "ID_categoria" AS id, "categoria" AS nombre`,
+            [nombre.trim(), id]
+        );
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({ error: 'No se encontró la categoría.' });
+        }
+        res.json({ mensaje: 'Categoría actualizada exitosamente', categoria: resultado.rows[0] });
+    } catch (error) {
+        console.error('Error al actualizar categoría:', error);
+        res.status(500).json({ error: 'Error al actualizar la categoría: ' + error.message });
+    }
+});
+
+// Eliminar una categoría
+app.delete('/api/categorias/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Verificar si existen productos asociados
+        const chequeoProds = await pool.query(
+            'SELECT COUNT(*)::int AS total FROM "Producto" WHERE "ID_categoria" = $1',
+            [id]
+        );
+        if (chequeoProds.rows[0].total > 0) {
+            return res.status(400).json({ 
+                error: `No se puede eliminar la categoría porque hay ${chequeoProds.rows[0].total} producto(s) asignados a ella.` 
+            });
+        }
+
+        const borrado = await pool.query(
+            'DELETE FROM "Categoria" WHERE "ID_categoria" = $1 RETURNING "ID_categoria"',
+            [id]
+        );
+        if (borrado.rows.length === 0) {
+            return res.status(404).json({ error: 'No se encontró la categoría.' });
+        }
+
+        res.json({ mensaje: 'Categoría eliminada exitosamente' });
+    } catch (error) {
+        console.error('Error al eliminar categoría:', error);
+        res.status(500).json({ error: 'Error al eliminar la categoría: ' + error.message });
+    }
+});
 // 5. INICIALIZAR EL SERVIDOR
 // Solo levanta el servidor con app.listen cuando corrés este archivo
 // directamente (ej: "node server.js" en tu compu). Cuando Vercel lo

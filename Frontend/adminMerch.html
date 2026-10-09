@@ -158,7 +158,31 @@
                     <button type="submit" class="btn-gold" id="btn-submit">+ AGREGAR PRODUCTO</button>
                 </div>
             </form>
+        <!-- Formulario de Gestión de Categorías -->
+            <div class="section-header" style="margin-top: 40px;">
+                <h2 class="title-accent">GESTIONAR CATEGORÍAS</h2>
+            </div>
 
+            <form id="form-categoria" class="dark-form">
+                <div class="form-grid">
+                    <div class="form-group col-span-2">
+                        <label>SELECCIONAR CATEGORÍA *</label>
+                        <select id="select-gestion-categoria">
+                            <option value="NUEVA">+ Agregar categoría</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-span-2">
+                        <label>NOMBRE DE LA CATEGORÍA *</label>
+                        <input type="text" id="nombre-categoria" placeholder="Nombre de la categoría..." required>
+                    </div>
+                </div>
+
+                <div class="form-footer" style="display: flex; gap: 12px; align-items: center;">
+                    <button type="submit" class="btn-gold" id="btn-submit-categoria">+ CREAR CATEGORÍA</button>
+                    <button type="button" class="btn-danger" id="btn-eliminar-categoria" style="display: none;">🗑 ELIMINAR CATEGORÍA</button>
+                </div>
+            </form>
             <div class="section-header" style="margin-top: 40px;">
                 <h2 class="title-accent">CATÁLOGO ACTUAL</h2>
             </div>
