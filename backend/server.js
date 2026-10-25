@@ -245,6 +245,48 @@ app.post('/api/pedidos', async (req, res) => {
         res.status(500).json({ error: 'Error interno al procesar la compra: ' + error.message });
     }
 });
+// ==========================================================
+// RUTA — Obtener todos los pedidos con sus detalles
+// ==========================================================
+app.get('/api/pedidos', async (req, res) => {
+    try {
+        const resultadoPedidos = await pool.query(`
+            SELECT 
+                "ID_pedido" AS id,
+                "Fecha" AS fecha,
+                "ID_estado" AS estado,
+                "ID_metodo" AS metodo,
+                "Total" AS total,
+                "nombre_cliente" AS cliente,
+                "DNI" AS dni,
+                "Curso" AS curso,
+                "Telefono" AS telefono
+            FROM "Pedido"
+            ORDER BY "ID_pedido" DESC
+        `);
+
+        const pedidos = resultadoPedidos.rows;
+
+        for (let pedido of pedidos) {
+            const detalleRes = await pool.query(`
+                SELECT 
+                    d."Cantidad" AS cantidad,
+                    d."Precio_unitario" AS precio_unitario,
+                    p."Nombre" AS nombre_producto
+                FROM "Detalle_pedido" d
+                JOIN "Producto" p ON d."ID_producto" = p."ID_producto"
+                WHERE d."ID_pedido" = $1
+            `, [pedido.id]);
+
+            pedido.productos = detalleRes.rows;
+        }
+
+        res.json(pedidos);
+    } catch (error) {
+        console.error('Error al obtener pedidos:', error);
+        res.status(500).json({ error: 'Error al obtener pedidos' });
+    }
+});
 
 // ==========================================================
 // RUTAS NUEVAS — Gestión individual de imágenes por producto

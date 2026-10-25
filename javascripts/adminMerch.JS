@@ -6,10 +6,11 @@ const BASE_URL = isLocal
 const API_PRODUCTOS = `${BASE_URL}/api/productos`;
 const API_CATEGORIAS = `${BASE_URL}/api/categorias`;
 const API_IMAGENES = `${BASE_URL}/api/imagenes`;
+const API_PEDIDOS = `${BASE_URL}/api/pedidos`;
 
 let productos = [];
 let editandoId = null;
-let productoImagenesId = null; // producto que está abierto en el modal de imágenes
+let productoImagenesId = null;
 
 // ---------- Autenticación ----------
 window.addEventListener("DOMContentLoaded", function() {
@@ -31,20 +32,17 @@ function cerrarSesion() {
 
 // ---------- Navegación por Pestañas (Tabs) ----------
 function abrirTab(evt, tabId) {
-    // Ocultar todos los contenidos de las pestañas
     const tabContents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < tabContents.length; i++) {
         tabContents[i].style.display = "none";
         tabContents[i].classList.remove("active");
     }
 
-    // Quitar la clase 'active' de todos los botones
     const tabBtns = document.getElementsByClassName("tab-btn");
     for (let i = 0; i < tabBtns.length; i++) {
         tabBtns[i].classList.remove("active");
     }
 
-    // Mostrar el tab actual y añadir la clase active al botón pulsado
     document.getElementById(tabId).style.display = "block";
     document.getElementById(tabId).classList.add("active");
     evt.currentTarget.classList.add("active");
@@ -61,24 +59,6 @@ const inputDescripcion = document.getElementById("descripcion");
 const inputStock = document.getElementById("stock");
 const selectCategoria = document.getElementById("categoria");
 
-
-// ---------- Cargar categorías en el selector ----------
-async function cargarCategorias() {
-    try {
-        const respuesta = await fetch(API_CATEGORIAS);
-        if (!respuesta.ok) throw new Error("Error al obtener categorías");
-        const categorias = await respuesta.json();
-
-        categorias.forEach((cat) => {
-            const option = document.createElement("option");
-            option.value = cat.id;
-            option.textContent = cat.nombre;
-            selectCategoria.appendChild(option);
-        });
-    } catch (error) {
-        console.error(error);
-    }
-}
 const formCategoria = document.getElementById("form-categoria");
 const selectGestionCategoria = document.getElementById("select-gestion-categoria");
 const inputNombreCategoria = document.getElementById("nombre-categoria");
@@ -93,32 +73,26 @@ async function cargarCategorias() {
         if (!respuesta.ok) throw new Error("Error al obtener categorías");
         listaCategorias = await respuesta.json();
 
-        // 1. Limpiar y llenar el selector del formulario de productos
         selectCategoria.innerHTML = '<option value="" disabled selected>Seleccionar categoría</option>';
-        // 2. Limpiar y llenar el selector del formulario de gestión de categorías
         selectGestionCategoria.innerHTML = '';
 
         listaCategorias.forEach((cat) => {
-            // Opción para el formulario de producto
             const optionProd = document.createElement("option");
             optionProd.value = cat.id;
             optionProd.textContent = cat.nombre;
             selectCategoria.appendChild(optionProd);
 
-            // Opción para el selector de gestión de categoría
             const optionGest = document.createElement("option");
             optionGest.value = cat.id;
             optionGest.textContent = cat.nombre;
             selectGestionCategoria.appendChild(optionGest);
         });
 
-        // Opción final para agregar una nueva categoría
         const optionNueva = document.createElement("option");
         optionNueva.value = "NUEVA";
         optionNueva.textContent = "+ Agregar categoría";
         selectGestionCategoria.appendChild(optionNueva);
 
-        // Resetear el estado del formulario de gestión
         selectGestionCategoria.value = "NUEVA";
         resetearFormCategoria();
 
@@ -127,7 +101,6 @@ async function cargarCategorias() {
     }
 }
 
-// Al cambiar la opción en el selector de gestión de categoría
 if (selectGestionCategoria) {
     selectGestionCategoria.addEventListener("change", () => {
         const valor = selectGestionCategoria.value;
@@ -162,14 +135,12 @@ if (formCategoria) {
         try {
             let respuesta;
             if (modo === "NUEVA") {
-                // Crear
                 respuesta = await fetch(API_CATEGORIAS, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ nombre: nombreCat })
                 });
             } else {
-                // Editar
                 respuesta = await fetch(`${API_CATEGORIAS}/${modo}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
@@ -185,7 +156,7 @@ if (formCategoria) {
 
             alert(data.mensaje || "Categoría guardada exitosamente");
             await cargarCategorias();
-            await cargarProductos(); // Recarga catálogo para actualizar nombres de categorías
+            await cargarProductos();
 
         } catch (error) {
             console.error(error);
@@ -227,19 +198,21 @@ if (btnEliminarCategoria) {
 // ---------- Traer productos desde el backend ----------
 async function cargarProductos() {
     try {
-        // ?todos=true: el panel de admin necesita ver también los productos ocultos
         const respuesta = await fetch(`${API_PRODUCTOS}?todos=true`);
         if (!respuesta.ok) throw new Error("Error al obtener productos");
         productos = await respuesta.json();
         renderCatalogo();
     } catch (error) {
         console.error(error);
-        grid.innerHTML = `<p class="catalogo-vacio text-muted" style="grid-column: 1 / -1; text-align: center;">No se pudo conectar con el servidor. ¿Está corriendo el backend (node server.js)?</p>`;
+        if (grid) {
+            grid.innerHTML = `<p class="catalogo-vacio text-muted" style="grid-column: 1 / -1; text-align: center;">No se pudo conectar con el servidor.</p>`;
+        }
     }
 }
 
-// ---------- Renderizar catálogo adaptado al diseño oscuro ----------
+// ---------- Renderizar catálogo ----------
 function renderCatalogo() {
+    if (!grid) return;
     grid.innerHTML = "";
 
     if (productos.length === 0) {
@@ -249,8 +222,6 @@ function renderCatalogo() {
 
     productos.forEach((producto) => {
         const card = document.createElement("article");
-        // producto.visible llega como boolean desde Postgres; si por alguna razón
-        // no viene (filas viejas antes de la migración), lo tratamos como visible.
         const estaOculto = producto.visible === false;
         card.className = "producto-card" + (estaOculto ? " oculto" : "");
 
@@ -258,7 +229,6 @@ function renderCatalogo() {
                 ? producto.url_imagen 
                 : "imagenes/img.tecN°24.png";
 
-        // Obtenemos el nombre de la categoría si está disponible para la etiqueta
         const categoriaTexto = selectCategoria.querySelector(`option[value="${producto.id_categoria}"]`) 
                                ? selectCategoria.querySelector(`option[value="${producto.id_categoria}"]`).textContent 
                                : "PRODUCTO";
@@ -311,93 +281,154 @@ function cargarEnFormulario(id) {
     inputPrecio.value = producto.precio;
     inputDescripcion.value = producto.descripcion ?? "";
     inputStock.value = producto.stock ?? "";
-    //adaptar a que se carguen imagenes y cordinar todas las imagenes con cloudinary
-    // Solo si tenés "id_categoria" viniendo de tu API:
-    if(producto.id_categoria) {
+    if (producto.id_categoria) {
         selectCategoria.value = producto.id_categoria;
     }
 
     editandoId = id;
     btnSubmit.textContent = "Guardar Cambios";
 
-    // Al editar, la imagen ya no se toca desde este formulario
-    // (se gestiona aparte con "🖼 Gestionar imágenes"), así que no la exigimos.
     const inputImagenesForm = document.getElementById("imagenes");
     if (inputImagenesForm) inputImagenesForm.required = false;
 
-    // Al editar nos aseguramos de estar en la pestaña catálogo
     document.querySelector('.tabs-nav button:nth-child(3)').click();
-    
     form.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+// ---------- Crear / editar producto ----------
+if (form) {
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-// ---------- Crear / editar ----------
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        const formData = new FormData();
+        formData.append("nombre", inputNombre.value.trim());
+        formData.append("precio", inputPrecio.value);
+        formData.append("descripcion", inputDescripcion.value.trim());
+        formData.append("stock", inputStock.value);
+        formData.append("id_categoria", selectCategoria.value);
 
-    // 1. Instanciamos FormData para enviar texto + archivos físicamente
-    const formData = new FormData();
-    formData.append("nombre", inputNombre.value.trim());
-    formData.append("precio", inputPrecio.value);
-    formData.append("descripcion", inputDescripcion.value.trim());
-    formData.append("stock", inputStock.value);
-    formData.append("id_categoria", selectCategoria.value);
-
-    // 2. Capturamos los archivos seleccionados en el input file
-    const inputImagenes = document.getElementById("imagenes");
-    if (inputImagenes && inputImagenes.files.length > 0) {
-        for (let i = 0; i < inputImagenes.files.length; i++) {
-            // 'imagenes' debe coincidir con upload.array('imagenes') en tu backend Express
-            formData.append("imagenes", inputImagenes.files[i]);
+        const inputImagenes = document.getElementById("imagenes");
+        if (inputImagenes && inputImagenes.files.length > 0) {
+            for (let i = 0; i < inputImagenes.files.length; i++) {
+                formData.append("imagenes", inputImagenes.files[i]);
+            }
         }
-    }
+
+        try {
+            let respuesta;
+            if (editandoId !== null) {
+                respuesta = await fetch(`${API_PRODUCTOS}/${editandoId}`, {
+                    method: "PUT",
+                    body: formData
+                });
+            } else {
+                respuesta = await fetch(API_PRODUCTOS, {
+                    method: "POST",
+                    body: formData
+                });
+            }
+
+            if (!respuesta.ok) {
+                const errorBackend = await respuesta.json();
+                console.error("Detalle exacto del backend:", errorBackend);
+                alert(`Error del servidor: ${errorBackend.error || 'No se pudo guardar'}`);
+                return;
+            }
+
+            editandoId = null;
+            btnSubmit.textContent = "+ AGREGAR PRODUCTO";
+            form.reset();
+            if (inputImagenes) inputImagenes.required = true;
+            await cargarProductos();
+            
+        } catch (error) {
+            console.error(error);
+            alert("No se pudo guardar el producto.");
+        }
+    });
+}
+
+// ==========================================================
+// Cargar y renderizar Pedidos
+// ==========================================================
+async function cargarPedidos() {
+    const contenedor = document.getElementById("contenedor-pedidos");
+    if (!contenedor) return;
 
     try {
-        let respuesta;
-        if (editandoId !== null) {
-            // Edición de producto
-            respuesta = await fetch(`${API_PRODUCTOS}/${editandoId}`, {
-                method: "PUT",
-                body: formData // NO agregar Headers de Content-Type acá
-            });
-        } else {
-            // Creación de producto
-            respuesta = await fetch(API_PRODUCTOS, {
-                method: "POST",
-                body: formData // NO agregar Headers de Content-Type acá
-            });
-        }
+        const respuesta = await fetch(API_PEDIDOS);
+        if (!respuesta.ok) throw new Error("Error al obtener los pedidos");
+        const pedidos = await respuesta.json();
 
-        if (!respuesta.ok) {
-            const errorBackend = await respuesta.json();
-            console.error("Detalle exacto del backend:", errorBackend);
-            alert(`Error del servidor: ${errorBackend.error || 'No se pudo guardar'}`);
-            return;
-        }
-        // 3. Reseteo del estado y de la interfaz
-        editandoId = null;
-        btnSubmit.textContent = "+ AGREGAR PRODUCTO";
-        form.reset();
-        if (inputImagenes) inputImagenes.required = true; // volvemos a modo "crear producto nuevo"
-        await cargarProductos();
-        
+        // Actualiza el indicador visual de la pestaña
+        const badgePedidos = document.querySelector('.tabs-nav button:nth-child(1) .badge');
+        if (badgePedidos) badgePedidos.textContent = pedidos.length;
+
+        renderPedidos(pedidos);
     } catch (error) {
-        console.error(error);
-        alert("No se pudo guardar el producto.");
+        console.error("Error al cargar pedidos:", error);
+        contenedor.innerHTML = `<p class="text-muted" style="text-align: center; padding: 20px;">No se pudieron cargar los pedidos del servidor.</p>`;
     }
-});
+}
 
+function renderPedidos(pedidos) {
+    const contenedor = document.getElementById("contenedor-pedidos");
+    if (!contenedor) return;
+    contenedor.innerHTML = "";
+
+    if (pedidos.length === 0) {
+        contenedor.innerHTML = `<p class="text-muted" style="text-align: center; padding: 20px;">No hay pedidos recibidos por el momento.</p>`;
+        return;
+    }
+
+    pedidos.forEach((p) => {
+        const fechaFormateada = p.fecha ? new Date(p.fecha).toLocaleDateString('es-AR') : "Reciente";
+        
+        let itemsHtml = "";
+        if (p.productos && p.productos.length > 0) {
+            p.productos.forEach(prod => {
+                const subtotalItem = prod.cantidad * prod.precio_unitario;
+                itemsHtml += `<li><span>${prod.cantidad}× ${prod.nombre_producto}</span> <span>$${Number(subtotalItem).toLocaleString('es-AR')}</span></li>`;
+            });
+        }
+
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.style.marginBottom = "16px";
+        card.innerHTML = `
+            <div class="order-header">
+                <div>
+                    <span class="order-id text-gold">PED-${p.id}</span>
+                    <span class="badge-status bg-gold">PENDIENTE</span>
+                </div>
+                <div class="order-actions">
+                    <span class="order-total text-gold">$${Number(p.total).toLocaleString('es-AR')}</span>
+                    <button class="btn-success">✓ RESOLVER</button>
+                </div>
+            </div>
+            <div class="order-body">
+                <h3>${p.cliente}</h3>
+                <p class="order-date">${fechaFormateada} — Curso: ${p.curso || 'N/D'} — DNI: ${p.dni || 'N/D'}</p>
+                <ul class="order-items">
+                    ${itemsHtml}
+                </ul>
+                <p class="order-delivery">🏫 Pago: ${p.metodo === 2 ? 'Transferencia' : 'Efectivo'} — Tel: ${p.telefono || 'N/D'}</p>
+            </div>
+        `;
+        contenedor.appendChild(card);
+    });
+}
+
+// ---------- Inicialización ----------
 cargarCategorias();
 cargarProductos();
+cargarPedidos();
 
-// Modo por defecto = "crear producto nuevo", así que la imagen es obligatoria
 const inputImagenesInicial = document.getElementById("imagenes");
 if (inputImagenesInicial) inputImagenesInicial.required = true;
 
 // ==========================================================
-// . MODAL "GESTIONAR IMÁGENES" — reemplazar una imagen puntual
-//   o agregar nuevas sin borrar las que ya existen
+// MODAL "GESTIONAR IMÁGENES"
 // ==========================================================
 const modalOverlay = document.getElementById("modal-imagenes-overlay");
 const modalGrid = document.getElementById("modal-imagenes-grid");
@@ -410,7 +441,6 @@ let cantidadImagenesModal = 0;
 
 async function abrirModalImagenes(idProducto) {
     productoImagenesId = idProducto;
-
     const producto = productos.find(p => String(p.id) === String(idProducto));
     modalTitulo.textContent = producto ? `Gestionar imágenes — ${producto.nombre}` : "Gestionar imágenes";
 
@@ -457,7 +487,6 @@ async function cargarImagenesDelModal() {
             modalGrid.appendChild(item);
         });
 
-        // Botón "Reemplazar" abre el selector de archivo oculto de esa imagen puntual
         modalGrid.querySelectorAll(".btn-reemplazar-img").forEach((btn) => {
             btn.addEventListener("click", () => {
                 const inputOculto = modalGrid.querySelector(`input[data-reemplazo-de="${btn.dataset.imgId}"]`);
@@ -465,7 +494,6 @@ async function cargarImagenesDelModal() {
             });
         });
 
-        // Al elegir el archivo nuevo, se sube automáticamente
         modalGrid.querySelectorAll('input[type="file"][data-reemplazo-de]').forEach((input) => {
             input.addEventListener("change", () => reemplazarImagen(input.dataset.reemplazoDe, input));
         });
@@ -499,7 +527,7 @@ async function reemplazarImagen(idImagen, inputFile) {
         }
 
         await cargarImagenesDelModal();
-        await cargarProductos(); // refresca también la miniatura del catálogo si era la principal
+        await cargarProductos();
     } catch (error) {
         console.error(error);
         alert("No se pudo reemplazar la imagen.");
@@ -563,15 +591,10 @@ async function eliminarImagen(idImagen) {
     }
 }
 
-// ==========================================================
-// . MOSTRAR / OCULTAR UN PRODUCTO (no lo borra de la base)
-// Guarda visible = false (oculto) o true (visible) en la columna "Visible"
-// del producto, y recarga el catálogo para que el botón cambie de estado.
-// ==========================================================
 async function toggleVisibilidadProducto(btn) {
     const id = btn.dataset.id;
     const visibleActual = btn.dataset.visibleActual === "true";
-    const nuevoValorVisible = !visibleActual; // si estaba visible -> pasa a false (oculto)
+    const nuevoValorVisible = !visibleActual;
 
     btn.disabled = true;
 
@@ -590,8 +613,6 @@ async function toggleVisibilidadProducto(btn) {
             return;
         }
 
-        // Recargamos el catálogo para que la tarjeta, el badge "OCULTO" y el
-        // color del botón queden consistentes con lo que quedó guardado.
         await cargarProductos();
     } catch (error) {
         console.error(error);
@@ -600,7 +621,6 @@ async function toggleVisibilidadProducto(btn) {
     }
 }
 
-// Muestra/oculta la zona de "+ Añadir imagen" según cuántas tiene ya el producto
 function actualizarZonaAgregar() {
     if (!modalAgregarZona) return;
 
@@ -613,7 +633,6 @@ function actualizarZonaAgregar() {
             <input type="file" id="input-agregar-imagenes" accept="image/*" multiple>
             <button id="btn-agregar-imagenes" onclick="agregarImagenes()">+ Añadir imagen</button>
         `;
-        // El input y el botón se recrearon: hay que volver a agarrar la referencia
         inputAgregarImagenes = document.getElementById("input-agregar-imagenes");
     }
 }
