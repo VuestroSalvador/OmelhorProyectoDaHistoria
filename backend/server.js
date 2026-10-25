@@ -500,6 +500,90 @@ app.post('/api/registro-cliente', async (req, res) => {
         res.status(500).json({ exito: false, mensaje: 'Error interno del servidor: ' + error.message });
     }
 });
+
+// ==========================================================
+// RUTA — Login de Clientes
+// ==========================================================
+app.post('/api/login-cliente', async (req, res) => {
+    const { usuario, contrasena } = req.body;
+
+    if (!usuario || !contrasena) {
+        return res.status(400).json({ exito: false, mensaje: 'Completá todos los campos.' });
+    }
+
+    try {
+        // Buscar al cliente por usuario o por mail
+        const resultado = await pool.query(
+            'SELECT * FROM clientes WHERE usuario = $1 OR mail = $1',
+            [usuario]
+        );
+
+        if (resultado.rows.length === 0) {
+            return res.status(401).json({ exito: false, mensaje: 'Usuario o contraseña incorrectos.' });
+        }
+
+        const cliente = resultado.rows[0];
+
+        // Verificar la contraseña con bcrypt
+        const coincide = await bcrypt.compare(contrasena, cliente.contraseña);
+
+        if (!coincide) {
+            return res.status(401).json({ exito: false, mensaje: 'Usuario o contraseña incorrectos.' });
+        }
+
+        // Devolvemos los datos del cliente y su carrito actual guardado en la BD
+        res.json({
+            exito: true,
+            mensaje: 'Login exitoso',
+            cliente: {
+                id: cliente.id,
+                nombre: cliente.nombre,
+                apellido: cliente.apellido,
+                usuario: cliente.usuario,
+                mail: cliente.mail,
+                carrito: cliente.carrito || []
+            }
+        });
+    } catch (error) {
+        console.error('Error en login de cliente:', error);
+        res.status(500).json({ exito: false, mensaje: 'Error interno del servidor: ' + error.message });
+    }
+});
+// ==========================================================
+// RUTAS — Sincronización del Carrito del Cliente
+// ==========================================================
+
+// Obtener el carrito de un cliente específico
+app.get('/api/clientes/:id/carrito', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const resultado = await pool.query('SELECT carrito FROM clientes WHERE id = $1', [id]);
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({ error: 'Cliente no encontrado' });
+        }
+        res.json({ carrito: resultado.rows[0].carrito || [] });
+    } catch (error) {
+        console.error('Error al obtener carrito:', error);
+        res.status(500).json({ error: 'Error al obtener el carrito' });
+    }
+});
+
+// Guardar/Actualizar el carrito de un cliente en la BD
+app.put('/api/clientes/:id/carrito', async (req, res) => {
+    const { id } = req.params;
+    const { carrito } = req.body; // Array con los productos del carrito
+
+    try {
+        await pool.query(
+            'UPDATE clientes SET carrito = $1 WHERE id = $2',
+            [JSON.stringify(carrito), id]
+        );
+        res.json({ exito: true, mensaje: 'Carrito sincronizado con éxito' });
+    } catch (error) {
+        console.error('Error al actualizar carrito:', error);
+        res.status(500).json({ error: 'Error al guardar el carrito' });
+    }
+});
 // 5. INICIALIZAR EL SERVIDOR
 // Solo levanta el servidor con app.listen cuando corrés este archivo
 // directamente (ej: "node server.js" en tu compu). Cuando Vercel lo
