@@ -460,6 +460,46 @@ app.delete('/api/categorias/:id', async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar la categoría: ' + error.message });
     }
 });
+
+// ==========================================================
+// RUTA — Registro de Clientes
+// ==========================================================
+app.post('/api/registro-cliente', async (req, res) => {
+    const { nombre, apellido, usuario, mail, contrasena } = req.body;
+
+    if (!nombre || !apellido || !usuario || !mail || !contrasena) {
+        return res.status(400).json({ exito: false, mensaje: 'Todos los campos son obligatorios.' });
+    }
+
+    try {
+        // Verificar si el usuario o el email ya existen en la base de datos
+        const existente = await pool.query(
+            'SELECT * FROM clientes WHERE usuario = $1 OR mail = $2',
+            [usuario, mail]
+        );
+
+        if (existente.rows.length > 0) {
+            return res.status(400).json({ exito: false, mensaje: 'El nombre de usuario o el correo ya están registrados.' });
+        }
+
+        // Hashear la contraseña de forma segura con bcrypt
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(contrasena, saltRounds);
+
+        // Insertar el nuevo cliente en la tabla "clientes" 
+        // (Asegurate de que los nombres de columnas coincidan exactamente con tu tabla en Neon)
+        await pool.query(
+            `INSERT INTO clientes (nombre, apellido, usuario, mail, contraseña) 
+             VALUES ($1, $2, $3, $4, $5)`,
+            [nombre, apellido, usuario, mail, hashedPassword]
+        );
+
+        res.status(201).json({ exito: true, mensaje: 'Cuenta creada exitosamente' });
+    } catch (error) {
+        console.error('Error al registrar cliente:', error);
+        res.status(500).json({ exito: false, mensaje: 'Error interno del servidor: ' + error.message });
+    }
+});
 // 5. INICIALIZAR EL SERVIDOR
 // Solo levanta el servidor con app.listen cuando corrés este archivo
 // directamente (ej: "node server.js" en tu compu). Cuando Vercel lo
