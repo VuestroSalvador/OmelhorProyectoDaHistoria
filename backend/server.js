@@ -12,6 +12,9 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 
+// IDs de la tabla "Estado". Verificá que coincidan con tu base.
+const ESTADO_PENDIENTE = 1;
+const ESTADO_RESUELTO = 2;
 // 1. MIDDLEWARES PRINCIPALES (Siempre arriba de las rutas)
 app.use(cors());
 app.use(express.json());
@@ -285,6 +288,27 @@ app.get('/api/pedidos', async (req, res) => {
     } catch (error) {
         console.error('Error al obtener pedidos:', error);
         res.status(500).json({ error: 'Error al obtener pedidos' });
+    }
+});
+// Marcar un pedido pendiente como resuelto
+app.put('/api/pedidos/:id/resolver', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const actualizado = await pool.query(
+            `UPDATE "Pedido" SET "ID_estado" = $1
+             WHERE "ID_pedido" = $2 AND "ID_estado" = $3
+             RETURNING "ID_pedido" AS id, "ID_estado" AS estado`,
+            [ESTADO_RESUELTO, id, ESTADO_PENDIENTE]
+        );
+
+        if (actualizado.rows.length === 0) {
+            return res.status(404).json({ error: 'No se encontró un pedido pendiente con ese ID.' });
+        }
+
+        res.json({ mensaje: 'Pedido resuelto', pedido: actualizado.rows[0] });
+    } catch (error) {
+        console.error('Error al resolver pedido:', error);
+        res.status(500).json({ error: error.message || 'Error al resolver el pedido' });
     }
 });
 

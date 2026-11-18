@@ -349,76 +349,130 @@ if (form) {
 }
 
 // ==========================================================
-// Cargar y renderizar Pedidos
+// Pedidos: pendientes, historial y resolución
 // ==========================================================
+const ESTADO_PENDIENTE = 1;   // mismos IDs que en server.js
+const ESTADO_RESUELTO = 2;
+
+function escaparHTML(texto) {
+    return String(texto ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+}
+
 async function cargarPedidos() {
-    const contenedor = document.getElementById("contenedor-pedidos");
-    if (!contenedor) return;
+    const contPendientes = document.getElementById("contenedor-pedidos");
+    const contHistorial = document.getElementById("contenedor-historial");
+    if (!contPendientes || !contHistorial) return;
 
     try {
         const respuesta = await fetch(API_PEDIDOS);
         if (!respuesta.ok) throw new Error("Error al obtener los pedidos");
         const pedidos = await respuesta.json();
 
-        // Actualiza el indicador visual de la pestaña
-        const badgePedidos = document.querySelector('.tabs-nav button:nth-child(1) .badge');
-        if (badgePedidos) badgePedidos.textContent = pedidos.length;
+        const pendientes = pedidos.filter(p => Number(p.estado) === ESTADO_PENDIENTE);
+        const resueltos = pedidos.filter(p => Number(p.estado) === ESTADO_RESUELTO);
+        const recaudado = resueltos.reduce((suma, p) => suma + Number(p.total), 0);
 
-        renderPedidos(pedidos);
+        // Contadores de las pestañas
+        const badges = document.querySelectorAll(".tabs-nav .badge");
+        if (badges[0]) badges[0].textContent = pendientes.length;
+        if (badges[1]) badges[1].textContent = resueltos.length;
+
+        // Tarjetas de estadísticas
+        document.getElementById("stat-pendientes").textContent = pendientes.length;
+        document.getElementById("stat-completadas").textContent = resueltos.length;
+        document.getElementById("stat-recaudado").textContent = "$" + recaudado.toLocaleString("es-AR");
+
+        renderPedidos(pendientes, contPendientes, false);
+        renderPedidos(resueltos, contHistorial, true);
     } catch (error) {
         console.error("Error al cargar pedidos:", error);
-        contenedor.innerHTML = `<p class="text-muted" style="text-align: center; padding: 20px;">No se pudieron cargar los pedidos del servidor.</p>`;
+        const msg = `<p class="text-muted" style="text-align: center; padding: 20px;">No se pudieron cargar los pedidos del servidor.</p>`;
+        contPendientes.innerHTML = msg;
+        contHistorial.innerHTML = msg;
     }
 }
 
-function renderPedidos(pedidos) {
-    const contenedor = document.getElementById("contenedor-pedidos");
-    if (!contenedor) return;
+function renderPedidos(pedidos, contenedor, esHistorial) {
     contenedor.innerHTML = "";
 
     if (pedidos.length === 0) {
-        contenedor.innerHTML = `<p class="text-muted" style="text-align: center; padding: 20px;">No hay pedidos recibidos por el momento.</p>`;
+        const texto = esHistorial ? "Todavía no hay pedidos resueltos." : "No hay pedidos pendientes por el momento.";
+        contenedor.innerHTML = `<p class="text-muted" style="text-align: center; padding: 20px;">${texto}</p>`;
         return;
     }
 
     pedidos.forEach((p) => {
-        const fechaFormateada = p.fecha ? new Date(p.fecha).toLocaleDateString('es-AR') : "Reciente";
-        
+        const fechaFormateada = p.fecha ? new Date(p.fecha).toLocaleDateString("es-AR") : "Reciente";
+
         let itemsHtml = "";
-        if (p.productos && p.productos.length > 0) {
-            p.productos.forEach(prod => {
-                const subtotalItem = prod.cantidad * prod.precio_unitario;
-                itemsHtml += `<li><span>${prod.cantidad}× ${prod.nombre_producto}</span> <span>$${Number(subtotalItem).toLocaleString('es-AR')}</span></li>`;
-            });
-        }
+        (p.productos || []).forEach(prod => {
+            const subtotalItem = prod.cantidad * prod.precio_unitario;
+            itemsHtml += `<li><span>${prod.cantidad}× ${escaparHTML(prod.nombre_producto)}</span> <span>$${Number(subtotalItem).toLocaleString("es-AR")}</span></li>`;
+        });
+
+        const colorTotal = esHistorial ? "text-green" : "text-gold";
+        const etiqueta = esHistorial
+            ? `<span class="badge-status bg-green">COMPLETADO</span>`
+            : `<span class="badge-status bg-gold">PENDIENTE</span>`;
+        const botonResolver = esHistorial
+            ? ""
+            : `<button class="btn-success btn-resolver" data-id="${p.id}">✓ RESOLVER</button>`;
 
         const card = document.createElement("div");
         card.className = "order-card";
-        card.style.marginBottom = "16px";
         card.innerHTML = `
             <div class="order-header">
                 <div>
-                    <span class="order-id text-gold">PED-${p.id}</span>
-                    <span class="badge-status bg-gold">PENDIENTE</span>
+                    <span class="order-id ${colorTotal}">PED-${p.id}</span>
+                    ${etiqueta}
                 </div>
                 <div class="order-actions">
-                    <span class="order-total text-gold">$${Number(p.total).toLocaleString('es-AR')}</span>
-                    <button class="btn-success">✓ RESOLVER</button>
+                    <span class="order-total ${colorTotal}">$${Number(p.total).toLocaleString("es-AR")}</span>
+                    ${botonResolver}
                 </div>
             </div>
             <div class="order-body">
-                <h3>${p.cliente}</h3>
-                <p class="order-date">${fechaFormateada} — Curso: ${p.curso || 'N/D'} — DNI: ${p.dni || 'N/D'}</p>
-                <ul class="order-items">
-                    ${itemsHtml}
-                </ul>
-                <p class="order-delivery">🏫 Pago: ${p.metodo === 2 ? 'Transferencia' : 'Efectivo'} — Tel: ${p.telefono || 'N/D'}</p>
+                <h3>${escaparHTML(p.cliente)}</h3>
+                <p class="order-date">${fechaFormateada} — Curso: ${escaparHTML(p.curso || "N/D")} — DNI: ${escaparHTML(p.dni || "N/D")}</p>
+                <ul class="order-items">${itemsHtml}</ul>
+                <p class="order-delivery">🏫 Pago: ${p.metodo === 2 ? "Transferencia" : "Efectivo"} — Tel: ${escaparHTML(p.telefono || "N/D")}</p>
             </div>
         `;
         contenedor.appendChild(card);
     });
+
+    if (!esHistorial) {
+        contenedor.querySelectorAll(".btn-resolver").forEach(btn => {
+            btn.addEventListener("click", () => resolverPedido(btn));
+        });
+    }
 }
 
+async function resolverPedido(btn) {
+    const id = btn.dataset.id;
+    if (!confirm(`¿Marcar el pedido PED-${id} como resuelto?`)) return;
+
+    btn.disabled = true;
+    try {
+        const respuesta = await fetch(`${API_PEDIDOS}/${id}/resolver`, { method: "PUT" });
+
+        if (!respuesta.ok) {
+            let detalle = "error desconocido";
+            try { detalle = (await respuesta.json()).error || detalle; } catch (e) {}
+            alert(`No se pudo resolver el pedido: ${detalle}`);
+            btn.disabled = false;
+            return;
+        }
+
+        await cargarPedidos();   // el pedido pasa solo al historial
+    } catch (error) {
+        console.error(error);
+        alert("No se pudo resolver el pedido.");
+        btn.disabled = false;
+    }
+}
 // ---------- Inicialización ----------
 cargarCategorias();
 cargarProductos();

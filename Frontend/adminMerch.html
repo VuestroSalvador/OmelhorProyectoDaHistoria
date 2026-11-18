@@ -30,30 +30,30 @@
     <main class="dashboard-container">
         <!-- Tarjetas de Estadísticas -->
         <section class="stats-row">
-            <div class="stat-card">
-                <h2 class="text-gold">3</h2>
-                <p>Pedidos pendientes</p>
-            </div>
-            <div class="stat-card">
-                <h2 class="text-green">5</h2>
-                <p>Ventas completadas</p>
-            </div>
-            <div class="stat-card">
-                <h2 class="text-green">$38.700</h2>
-                <p>Total recaudado</p>
-            </div>
-        </section>
+    <div class="stat-card">
+        <h2 class="text-gold" id="stat-pendientes">0</h2>
+        <p>Pedidos pendientes</p>
+    </div>
+    <div class="stat-card">
+        <h2 class="text-green" id="stat-completadas">0</h2>
+        <p>Ventas completadas</p>
+    </div>
+    <div class="stat-card">
+        <h2 class="text-green" id="stat-recaudado">$0</h2>
+        <p>Total recaudado</p>
+    </div>
+</section>
 
         <!-- Navegación de Pestañas -->
         <nav class="tabs-nav">
             <button class="tab-btn" onclick="abrirTab(event, 'tab-pedidos')">
-                📄 PEDIDOS RECIBIDOS <span class="badge">3</span>
+                📄 PEDIDOS RECIBIDOS <span class="badge"></span>
             </button>
             <button class="tab-btn" onclick="abrirTab(event, 'tab-historial')">
-                📊 HISTORIAL DE COMPRAS <span class="badge">5</span>
+                📊 HISTORIAL DE COMPRAS <span class="badge"></span>
             </button>
             <button class="tab-btn active" onclick="abrirTab(event, 'tab-catalogo')">
-                📦 CATÁLOGO DE PRODUCTOS <span class="badge">9</span>
+                📦 CATÁLOGO DE PRODUCTOS <span class="badge"></span>
             </button>
         </nav>
 
@@ -61,7 +61,6 @@
         <section id="tab-pedidos" class="tab-content">
             <div class="section-header">
                 <h2 class="title-accent">PEDIDOS RECIBIDOS</h2>
-                <button class="btn-danger-outline">🗑 LIMPIAR TODOS</button>
             </div>
             
             <!-- Contenedor dinámico de pedidos -->
@@ -70,28 +69,12 @@
             </div>
         </section>
 
-        <!-- PESTAÑA 2: Historial de Compras (Ejemplo Visual) -->
         <section id="tab-historial" class="tab-content">
-            <div class="section-header">
-                <h2 class="title-accent">HISTORIAL DE COMPRAS</h2>
-            </div>
-            <div class="order-card">
-                <div class="order-header">
-                    <div>
-                        <span class="order-id text-muted">PED-H01</span>
-                        <span class="badge-status bg-green">COMPLETADO</span>
-                    </div>
-                    <span class="order-total text-green">$6.500</span>
-                </div>
-                <div class="order-body">
-                    <h3>Juan Pérez</h3>
-                    <p class="order-date">2024-06-20</p>
-                    <ul class="order-items">
-                        <li><span>1× Chomba ET24</span></li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+    <div class="section-header">
+        <h2 class="title-accent">HISTORIAL DE COMPRAS</h2>
+    </div>
+    <div id="contenedor-historial"></div>
+</section>
 
         <!-- PESTAÑA 3: Catálogo y Agregar Producto (Tu código adaptado) -->
         <section id="tab-catalogo" class="tab-content active" style="display: block;">
